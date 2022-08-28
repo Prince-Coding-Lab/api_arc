@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="images/favicon.png">
+    <title>@ViewData["Title"] | ShnoFeeh</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" 
+          integrity="sha384-V9BJTZO7+59g431lWT7mZheVL1+JwcQiZVYgaU/rFmV00avVzeXoPuvRC7b6GRaH" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/3e13fa5a7e.js" 
+            integrity="sha384-9SjA2jHDdFLKI+1V/rJcd+o65y9858LNpCfV68Fe8fROFOZJZWvJe+M1c/6n/Dq3" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">
+                <img src="~/images/shnofeeh-logo.png" alt="Shnofeeh Logo" class="brand-image">
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Admin/login">Admin</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy Policy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/aboutUs">About Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/contactUs">Contact Us</a>
+                        </li>
+                        <li class="nav-item dropdown langhov">
+                            <form id="culture-switcher">
+                                <a class="nav-link dropdown-toggle " href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="~/images/us.png" class="pr-2">en-US<i class="fas fa-chevron-down ml-3" aria-hidden="true"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <button type="submit" class="dropdown-item btnLang" data-lang="en-US"><img src="~/images/us.png" class="pr-2"><span class="mr-2"> English (United States)</span></button>
+                                    <button type="submit" class="dropdown-item btnLang" data-lang="ar-SA"><img src="~/images/sa.png" class="pr-2"><span class="mr-2"> Arabic (Saudi Arabia)</span></button>
+                                    <input type="hidden" name="culture" id="hiddenLang">
+                                </div>
+                            </form>
+                            <script>
+                                $(".btnLang").on("click", function (id) {
+                                    $("#hiddenLang").val($(this).attr("data-lang"));
+                                });
+                            </script>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <main role="main" class="pb-3 mx-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer text-muted">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 pl-md-5 text-center text-md-left">
+                    <ul class="list-unstyled">
+                        <li><a asp-area="" asp-page="/Index">Admin</a></li>
+                        <li><a asp-area="" asp-page="/aboutUs">About Us</a></li>
+                        <li><a asp-area="" asp-page="/contactUs">Contact Us</a></li>
+                        <li><a asp-area="" asp-page="/termsandconditions">Terms and conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-6 align-self-end text-center text-md-right pr-md-5 social mt-5 mt-md-0">
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                        <li class="list-inline-item"><a href="#"><i class="fab fa-instagram"></i></a></li>
+                        <li class="list-inline-item"><a href="#"><i class="fab fa-twitter"></i></a></li>
+                        <li class="list-inline-item"><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

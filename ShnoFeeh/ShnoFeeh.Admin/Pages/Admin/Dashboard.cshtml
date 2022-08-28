@@ -1,0 +1,829 @@
+﻿@page
+@model DashboardModel
+@{
+    ViewData["Title"] = "Home page";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+@{
+    string roleName = Model._sessionManager.GetString(SessionItems.RoleName);
+    string name = roleName == "Admin" ? "Ad" : "Campaign";
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var t = $('#tblUsers').DataTable({
+            "columnDefs": [{
+                "searchable": false,
+                "orderable": false,
+                "targets": 0
+            }],
+            "order": [[1, 'asc']],
+            "pageLength": 5,
+            "lengthMenu": [[5, 10, 20], [5, 10, 20]]
+        });
+
+        t.on('order.dt search.dt', function () {
+            t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                cell.innerHTML = i + 1;
+            });
+        }).draw();
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).on("click", ".referenceClass", function () {
+        var userId = $(this).data('id');
+        $(".modal-footer #userId").val(userId);
+    });
+</script>
+<style>
+    form {
+        display: inline-block;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).on("click", ".referenceClassAdmin", function () {
+        var adId = $(this).data('adid');
+        var campaignId = $(this).data('campaignid');
+        $(".modal-footer #adId").val(adId);
+        $(".modal-footer #campaignId").val(campaignId);
+    });
+    $(document).on("click", ".referenceClassCompany", function () {
+        var adId = $(this).data('adid');
+        var campaignId = $(this).data('campaignid');
+        $(".modal-footer #adId").val(adId);
+        $(".modal-footer #campaignId").val(campaignId);
+    });
+    $(document).ready(function () {
+        var t = $('#example1').DataTable({
+            "columnDefs": [{
+                "searchable": false,
+                "orderable": false,
+                "targets": 0
+            }],
+            "order": [[1, 'asc']],
+            "pageLength": 10,
+            "lengthMenu": [[10, 15, 20], [10, 15, 20]]
+        });
+
+        t.on('order.dt search.dt', function () {
+            t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                cell.innerHTML = i + 1;
+            });
+        }).draw();
+    });
+    $(document).on("click", ".referenceClassPayment", function () {
+        var adId = $(this).data('adid');
+        var paymentType = $('#divRbl input[name="rblPayment"]:checked').val();
+        $(".modal-footer #adId").val(adId);
+        $(".modal-footer #paymentType").val(paymentType);
+    });
+    $(document).ready(function () {
+        $('#divRbl input').change(function () {
+            $(".modal-footer #paymentType").val($(this).val());
+        });
+    });
+</script>
+<script type="text/javascript">
+
+    $(document).on("click", ".referenceClassEditCompany", function () {
+        var adId = $(this).data('adid');
+        var campaignId = $(this).data('campaignid');
+        $(".modal-footer #uadId").val(adId);
+        $(".modal-footer #ucampaignId").val(campaignId);
+        $(".editBody #campaignName").val($(this).data('campaignname'));
+        //$(".editBody #campaignGoal").val($(this).data('campaigngoal'));
+        //$(".editBody #campaignDescription").val($(this).data('campaigndescription'));
+        $(".editBody #adTitle").val($(this).data('title'));
+        $(".editBody #adDetails").val($(this).data('details'));
+        $(".editBody #adPhone").val($(this).data('phone'));
+        $(".editBody #adKeywords").val($(this).data('keyword'));
+        $(".editBody #adWebsite").val($(this).data('url'));
+        $(".editBody #adActiveLink").val($(this).data('activelink'));
+        $(".editBody #adOfferPrice").val($(this).data('offerprice'));
+
+        var cityId = $(this).data('cityid');
+        GetCategory(cityId, $(this).data('category'));
+
+
+    });
+
+</script>
+<script>
+    $(function () {
+        $('#AdCoverImage').change(function (e) {
+            var names = $.map(e.target.files, function (val) { return val.name; });
+            if (names[0].length > 30) {
+                $('.AdCoverImage').html(names[0].substring(0, 25) + "...");
+            }
+            else {
+                $('.AdCoverImage').html(names[0]);
+            }
+        });
+        $('#AdImage1').change(function (e) {
+            var names = $.map(e.target.files, function (val) { return val.name; });
+            if (names.length > 1) {
+                $('.AdImage1').html(names.length.toString() + ' images selected.');
+            }
+            else {
+                $('.AdImage1').html(names[0]);
+            }
+        });
+
+
+    });
+</script>
+<script type="text/javascript">
+    function compareDates(d1, d2) {
+        var parts = d1.split('-');
+        var d1 = Number(parts[2] + parts[1] + parts[0]);
+        parts = d2.split('-');
+        var d2 = Number(parts[2] + parts[1] + parts[0]);
+        return d1 <= d2;
+    }
+
+    function GetCategory(city, category) {
+        $("#ddlCategory").html("");
+        var procemessage = "<option value='0'> Please wait...</option>";
+        $("#ddlCategory").html(procemessage).show();
+        var url = "/Admin/Ads/adListing?handler=Category";
+        $.ajax({
+            url: url,
+            data: { cityId: city },
+            cache: false,
+            type: "GET",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "json",
+            success: function (data) {
+                var markup = "<option value='' disabled selected>Category</option>";
+                for (var x = 0; x < data.length; x++) {
+                    markup += "<option value=" + data[x].id + ">" + data[x].catName + "</option>";
+                }
+                $("#ddlCategory").html(markup).show();
+                $("#ddlCategory").val(category);
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+    }
+    function convertTimestamp(timestamp) {
+        var d = new Date(timestamp), // Convert the passed timestamp to milliseconds
+            yyyy = d.getFullYear(),
+            mm = ('0' + (d.getMonth() + 1)).slice(-2),  // Months are zero based. Add leading 0.
+            dd = ('0' + d.getDate()).slice(-2),         // Add leading 0.
+
+            time = dd + '-' + mm + '-' + yyyy;
+        //time = yyyy + '-' + mm + '-' + dd + ', ' + h + ':' + min + ' ' + ampm;
+        return time;
+    }
+</script>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">@SharedLocalizer["dashboard"]</h1>
+                </div><!-- /.col -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Small boxes (Stat box) -->
+            <div class="row">
+                @if (roleName == "Admin")
+                {
+                    <div class="col-lg-3 col-12">
+                        <!-- small box -->
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3>User Management</h3>
+
+                                <p>@Model.UserDto.Count()</p>
+                            </div>
+                            <a asp-page="/Admin/UserManagement/userManagement" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-12">
+                        <!-- small box -->
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>Countries and Categories</h3>
+
+                                <p>@Model.NoOfCountries / @Model.NoOfCategories</p>
+                            </div>
+
+                            <a asp-page="/Admin/Categories/categorycountries" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                }
+                <!-- ./col -->
+                <div class="col-lg-3 col-12">
+                    <!-- small box -->
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>@name Listing</h3>
+
+                            <p>@Model.NoOfAds</p>
+                        </div>
+
+                        <a asp-page="/Admin/ads/adListing" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-12">
+                    <!-- small box -->
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>@SharedLocalizer["payments"]</h3>
+                            <p>@SharedLocalizer["kwd"] @Model.Amount</p>
+                        </div>
+
+                        <a asp-page="/Admin/Payments/payments" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+            </div>
+            <!-- /.row -->
+            <!-- Main row -->
+            <div class="row">
+                @if (!String.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <p id="ErrorMessage" class="" style="color:red;">@Model.ErrorMessage</p>
+                }
+                @if (!String.IsNullOrEmpty(Model.SuccessMessage))
+                {
+                    <p id="SuccessMessage" class="" style="color:darkgreen;">@Model.SuccessMessage</p>
+                }
+                @if (roleName == "Admin")
+                {
+                    <div class="col-12 ">
+                        <div class="card">
+
+                            <div class="card-header">
+                                <h3 class="card-title">New Users</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body table-responsive">
+                                <table class="table table-bordered table-striped" id="tblUsers">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>User Name</th>
+                                            <th>Role</th>
+                                            <th>Created Date</th>
+                                            <th>Activation Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.UserDto != null && @Model.UserDto.Count > 0)
+                                        {
+                                            int randId = new Random().Next(768789);
+                                            @foreach (var user in @Model.UserDto)
+                                            {
+                                                int randsId = new Random().Next(2229878);
+                                                var formsId = "formun_" + randsId.ToString();
+                                                <tr>
+                                                    <td></td>
+                                                    <td>
+                                                        <form asp-page-handler="ToProfile" id="@formsId" method="post">
+                                                            <a class="nav-link" href="javascript:document.getElementById('@formsId').submit()">@user.FirstName @user.LastName</a>
+                                                            <input type="hidden" name="user" value="@user.Id" />
+                                                        </form>
+                                                    </td>
+
+                                                    <td>@user.RoleName</td>
+                                                    <td data-order="@((Convert.ToDateTime(user.CreatedDate)).ToString("yyyyMMdd"))">@((Convert.ToDateTime(user.CreatedDate)).ToString("dd-MM-yyyy hh:mm:ss tt"))</td>
+                                                    @if (@user.UserStatus == "Active")
+                                                    {
+                                                        <td><a href="#"><span class="status badge bg-success">@user.UserStatus</span></a></td>
+                                                    }
+                                                    else if (@user.UserStatus == "InActive")
+                                                    {
+                                                        <td><a href="#"><span class="status badge bg-danger">@user.UserStatus</span></a></td>
+                                                    }
+                                                    else if (@user.UserStatus == "Pending Approval")
+                                                    {
+                                                        <td><a href="#"><span class="status badge bg-info">@user.UserStatus</span></a></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td><a href="#"><span class="status badge bg-info">@user.UserStatus</span></a></td>
+                                                    }
+                                                    <td class="links">
+                                                        @if (@user.UserStatus == "Active")
+                                                        {
+                                                            var formId = "formac_" + randId.ToString();
+                                                            <form id="@formId" asp-page-handler="ActivateDeactivateUser" method="post">
+                                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                                <a href="javascript:$('#@formId').submit();" class="mr-2">Deactivate</a>
+                                                            </form>
+                                                        }
+                                                        else if (@user.UserStatus == "InActive")
+                                                        {
+                                                            var formId = "formdc_" + randId.ToString();
+                                                            <form id="@formId" asp-page-handler="ActivateDeactivateUser" method="post">
+                                                                <a href="javascript:$('#@formId').submit();" class="mr-2 text-success">Activate</a><input type="hidden" name="userId" value="@user.Id" />
+                                                            </form>
+                                                        }
+                                                        else
+                                                        {
+                                                            var formId = "formap_" + randId.ToString();
+                                                            <form id="@formId" asp-page-handler="ActivateDeactivateUser" method="post">
+                                                                <a href="javascript:$('#@formId').submit();" class="mr-2 text-success">Approve</a><input type="hidden" name="userId" value="@user.Id" />
+                                                            </form>
+                                                        }
+                                                        | @*<a href="void(0)" class="ml-2 mr-2" data-toggle="modal" data-target="#modal-default"><i class="fas fa-pen"></i></a> |*@
+
+                                                        <a href="#" data-target="#myModal" data-toggle="modal" data-id="@user.Id" class="referenceClass ml-3"><i class="far fa-trash-alt"></i></a>
+                                                    </td>
+                                                </tr>
+                                                randId++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (Model.UserDto == null && String.IsNullOrEmpty(Model.ErrorMessage))
+                                                Response.Redirect("/Admin/Account/login");
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--Model Dialog for Delete-->                           
+                        <div style="margin: 20px;">
+                            <div id="myModal" class="modal fade" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">@SharedLocalizer["confirmation"]</h5>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>@SharedLocalizer["are_u_sure_to_delete"]</p>
+                                            <p class="text-secondary"><small>@SharedLocalizer["this_will_delete"].</small></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">@SharedLocalizer["cancel"]</button>
+                                            <form asp-page-handler="Delete" method="post">
+                                                <button type="submit" class="btn btn-primary">@SharedLocalizer["delete"]</button>
+                                                <input type="hidden" name="userId" id="userId" value="" />
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                    </div>
+                }
+
+                <div class="col-12 mt-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">@SharedLocalizer["new"] @name (s)</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body table-responsive">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>@name Title</th>
+                                        <th>Ad Status</th>
+                                        <th>Created Date</th>
+                                        <th>Period Remaining</th>
+                                        <th>City</th>
+                                        <th>View(s)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.campaignDto != null)
+                                    {
+                                        @if (roleName == "Admin")
+                                        {
+                                            foreach (var campaign in Model.campaignDto)
+                                            {
+                                                @if (campaign.Ads.Count > 0 && campaign.Ads[0].StatusId != null && campaign.Ads[0].StatusId != 3)
+                                                {
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>
+                                                            @{int randIdn = new Random().Next(1345665);
+                                                                var formIdn = "formad_" + randIdn.ToString();
+                                                            }
+                                                            <form id="@formIdn" asp-page-handler="AdDetails" method="post">
+                                                                <input type="hidden" name="adId" value="@campaign.Ads[0].Id" />
+                                                                <a href="javascript:$('#@formIdn').submit();">@campaign.Ads[0].Title</a>
+                                                            </form>
+                                                        </td>
+
+                                                        @if (@campaign.Ads[0].StatusId == 5)
+                                                        {
+                                                            <td><span class="status badge bg-success">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else if (@campaign.Ads[0].StatusId == 6)
+                                                        {
+                                                            <td><span class="status badge bg-danger">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else if (@campaign.Ads[0].StatusId == 4)
+                                                        {
+                                                            <td><span class="status badge bg-gradient-info">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else if (@campaign.Ads[0].StatusId == 2)
+                                                        {
+                                                            <td><span class="status badge bg-gradient-info">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else if (@campaign.Ads[0].StatusId == 1)
+                                                        {
+                                                            <td><span class="status badge bg-gradient-green">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><span class="status badge bg-success">@campaign.Ads[0].Status</span></td>
+                                                        }
+
+                                                        <td data-order="@((Convert.ToDateTime(campaign.Ads[0].CreatedDate)).ToString("yyyyMMdd"))">@((Convert.ToDateTime(campaign.Ads[0].CreatedDate)).ToString("dd-MM-yyyy hh:mm:ss tt"))</td>
+
+                                                        @{var days = (campaign.Ads[0].EndDate.HasValue ? (int?)(campaign.Ads[0].EndDate.Value.Date - DateTime.Now.Date).TotalDays : null);}
+                                                        @{var convertedDays = Model.FormatDays(days ?? 0);}
+
+                                                        <td>@convertedDays</td>
+
+                                                        <td>@campaign.Ads[0].City</td>
+                                                        <td>@campaign.Ads[0].Views</td>
+
+
+                                                        <td class="links">
+                                                            @if (@campaign.Ads[0].StatusId == 5)
+                                                            {
+
+                                                            }
+                                                            else if (@campaign.Ads[0].StatusId == 6)
+                                                            {
+
+                                                            }
+                                                            else if (@campaign.Ads[0].StatusId == 4)
+                                                            {
+                                                                <div style="float:left">
+                                                                    @{int randId = new Random().Next(44456787);
+                                                                        var formId = "formacad_" + randId.ToString();
+                                                                    }
+                                                                    <form id="@formId" asp-page-handler="ActivateDeactivateCampaign" method="post">
+                                                                        <input type="hidden" name="adId" value="@campaign.Ads[0].Id" />
+                                                                        <input type="hidden" name="statusId" value="1" />
+                                                                        <a href="javascript:$('#@formId').submit();" class="mr-2 text-success">Accept</a> |
+                                                                    </form>
+                                                                </div>
+                                                                <div class="float-left">
+                                                                    @{int randzId = new Random().Next(11324567);
+                                                                        var formzId = "formdcad_" + randzId.ToString();
+                                                                    }
+                                                                    <form id="@formzId" asp-page-handler="ActivateDeactivateCampaign" method="post">
+                                                                        <input type="hidden" name="adId" value="@campaign.Ads[0].Id" />
+                                                                        <input type="hidden" name="statusId" value="2" />
+                                                                        &nbsp;&nbsp;<a href="javascript:$('#@formzId').submit();" class="mr-2 text-danger">Reject</a> |
+                                                                    </form>
+                                                                </div>
+                                                                        }
+
+                                                            <div class="float-left">
+                                                                &nbsp;<a href="#" data-target="#myDeleteModal" data-toggle="modal" data-adId="@campaign.Ads[0].Id" data-campaignId="@campaign.Id" class="referenceClassAdmin ml-3"><i class="far fa-trash-alt"></i></a>
+                                                            </div>
+                                                        </td>
+
+
+                                                    </tr>
+                                                                        }
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            foreach (var campaign in Model.campaignDto)
+                                                                            {
+                                                @if (campaign.Ads != null && campaign.Ads.Count > 0)
+                                                {
+                                                    <tr>
+                                                        <td></td>
+                                                        <td>
+                                                            @{int randIdn = new Random().Next(565656565);
+                                                                var formIdn = "formaddt_" + randIdn.ToString();
+                                                            }
+                                                            <form id="@formIdn" asp-page-handler="AdDetails" method="post">
+                                                                <input type="hidden" name="adId" value="@campaign.Ads[0].Id" />
+                                                                <a href="javascript:$('#@formIdn').submit();">@campaign.Ads[0].Title</a>
+                                                            </form>                                                            
+                                                        </td>
+
+                                                        @if (@campaign.Ads[0].StatusId == 5)
+                                                        {
+                                                            <td><span class="status badge bg-success">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else if (@campaign.Ads[0].StatusId == 6)
+                                                        {
+                                                            <td><span class="status badge bg-danger">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else if (@campaign.Ads[0].StatusId == 4)
+                                                        {
+                                                            <td><span class="status badge bg-gradient-info">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else if (@campaign.Ads[0].StatusId == 2)
+                                                        {
+                                                            <td><span class="status badge bg-gradient-info">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else if (@campaign.Ads[0].StatusId == 1)
+                                                        {
+                                                            <td><span class="status badge bg-gradient-green">@campaign.Ads[0].Status</span></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><span class="status badge bg-info">@campaign.Ads[0].Status</span></td>
+                                                        }
+
+                                                        <td data-order="@((Convert.ToDateTime(campaign.Ads[0].CreatedDate)).ToString("yyyyMMdd"))">@((Convert.ToDateTime(campaign.Ads[0].CreatedDate)).ToString("dd-MM-yyyy hh:mm:ss tt"))</td>
+
+                                                        @{var days = (campaign.Ads[0].EndDate.HasValue ? (int?)(campaign.Ads[0].EndDate.Value.Date - DateTime.Now.Date).TotalDays : null);}
+                                                        @{var convertedDays = Model.FormatDays(days ?? 0);}
+                                                        <td>@convertedDays</td>
+
+                                                        <td>@campaign.Ads[0].City</td>
+                                                        <td>@campaign.Ads[0].Views</td>
+                                                        @{var icon = "|";}
+
+
+                                                        <td class="links">
+
+                                                            @if (@campaign.Ads[0].StatusId == 3)
+                                                            {
+                                                                <div class="float-left">
+                                                                    <a href="#" data-target="#modalPaymentType" data-toggle="modal" data-adId="@campaign.Ads[0].Id" class="referenceClassPayment mr-2 text-success">Payment</a> |
+                                                                </div>
+                                                            }
+                                                            @if (@campaign.Ads[0].StatusId == 2 || @campaign.Ads[0].StatusId == 3 || @campaign.Ads[0].StatusId == 4)
+                                                            {
+                                                                <div class="float-left">
+                                                                    &nbsp;<a href="#" data-target="#updateAd" data-toggle="modal" data-adId="@campaign.Ads[0].Id"
+                                                                             data-campaignId="@campaign.Id"
+                                                                             data-campaignName="@campaign.Name"
+                                                                             data-title="@campaign.Ads[0].Title"
+                                                                             data-category="@campaign.Ads[0].CategoryId"
+                                                                             data-startDate="@campaign.Ads[0].StartDate"
+                                                                             data-endDate="@campaign.Ads[0].EndDate"
+                                                                             data-offerPrice="@campaign.Ads[0].ProductPrice"
+                                                                             data-phone="@campaign.Ads[0].Phone"
+                                                                             data-url="@campaign.Ads[0].URL"
+                                                                             data-Details="@campaign.Ads[0].Desc"
+                                                                             @*data-campaignDescription="@campaign.Description"
+                                                                             data-campaignGoal="@campaign.Goal"*@
+                                                                             data-ActiveLink="@campaign.Ads[0].ActiveLink"
+                                                                             data-cityid="@campaign.Ads[0].CityId"
+                                                                             data-keyword="@campaign.Ads[0].Keyword" class="referenceClassEditCompany ml-0 mr-2"><i class="fas fa-pen"></i></a> |
+                                                                </div>
+                                                            }
+
+
+                                                            <div class="float-left">
+                                                                &nbsp;<a href="#" data-target="#myDeleteModal" data-toggle="modal" data-adId="@campaign.Ads[0].Id" data-campaignId="@campaign.Id" class="referenceClassCompany ml-3"><i class="far fa-trash-alt"></i></a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                            }
+                                                                }
+                                                            }
+                                                            }
+
+                            </table>
+                        </div>
+                        <!--Model Dialog for Delete-->
+                        <div style="margin: 20px;">
+                            <div id="myDeleteModal" class="modal fade" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirmation</h5>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete the @name?</p>
+                                            <p class="text-secondary"><small>This will permanently delete the @name, and remove your Ad from the app.</small></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <form asp-page-handler="DeleteCampaign" method="post">
+                                                <button type="submit" class="btn btn-primary">Delete</button>
+                                                <input type="hidden" name="adId" id="adId" value="" />
+                                                <input type="hidden" name="campaignId" id="campaignId" value="" />
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin: 20px;">
+                            <div id="modalPaymentType" class="modal fade" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Payment Type</h5>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Choose a Payment Type : </p>
+
+                                            <div class="form-group" id="divRbl">
+                                                <label for="exampleInputFile"><span class="red">*</span>Payment Type : </label>
+                                                <input style="margin-right:5px" name="rblPayment" type="radio" value="1" checked id="knet" /><b style="margin-right:15px">KNET</b>
+                                                <input style="margin-right:5px" name="rblPayment" type="radio" value="2" id="master" /><b style="margin-right:15px">Visa/Master</b>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+
+                                            <form asp-page-handler="CreateOrder" method="post">
+                                                <button type="submit" class="btn btn-primary">Pay</button>
+                                                <input type="hidden" name="adId" id="adId" value="" />
+                                                <input type="hidden" name="paymentType" id="paymentType" value="" />
+                                            </form>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="updateAd" tabindex="-1" role="dialog" aria-labelledby="updateAdlabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="updateAdlabel">Update @name</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body editBody">
+
+                                        <form role="form" enctype="multipart/form-data" method="post" style="display:inline">
+
+                                            <div class="row">
+                                                @if (roleName != "Admin")
+                                                {
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <label>@name Name</label>
+                                                            <input type="text" asp-for="@Model.UpdateCampaignDto.Name" class="form-control" id="campaignName" placeholder="@name Name ">
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="col-6">
+                                                            <div class="form-group">
+                                                                <label>@name Goal</label>
+                                                                <input type="text" id="campaignGoal" asp-for="@Model.UpdateCampaignDto.Goal" class="form-control" placeholder="@name Goal ">
+                                                            </div>
+                                                        </div>*@
+
+                                                }
+
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>Ad Title</label>
+                                                        <input type="text" class="form-control" asp-for="@Model.UpdateAdsDto.Title" id="adTitle" placeholder="Ad Title">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>Keywords</label>
+                                                        <input type="text" class="form-control" asp-for="@Model.UpdateAdsDto.Keyword" id="adKeywords" placeholder="Keywords">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if (roleName != "Admin")
+                                            {
+                                                @*<div class="row">
+
+                                                        <div class="col-12">
+                                                            <div class="form-group">
+                                                                <label>@name Description </label>
+                                                                <textarea class="form-control" asp-for="@Model.UpdateCampaignDto.Description" id="campaignDescription" placeholder="@name Description"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>*@
+                                            }
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <div class="form-group">
+                                                        <label>Phone Number</label>
+                                                        <input type="text" asp-for="@Model.UpdateAdsDto.Phone" class="form-control" id="adPhone" placeholder="Enter Phonenumber">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>Website/Instagram Link</label>
+                                                        <input type="text" class="form-control" asp-for="@Model.UpdateAdsDto.URL" id="adWebsite" placeholder="Enter Website">
+                                                    </div>
+                                                </div>
+                                                <div class="col-3">
+                                                    <div class="form-group">
+                                                        <label>Active Link</label>
+                                                        <select class="form-control" id="adActiveLink" asp-for="@Model.UpdateAdsDto.ActiveLink">
+                                                            <option value="" disabled selected>Active Link</option>
+                                                            <option value="URL">URL</option>
+                                                            <option value="Phone">Phone</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>                                        
+                                            <div class="row">
+
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>Category</label>
+                                                        <select class="form-control" id="ddlCategory" asp-for="@Model.UpdateAdsDto.CategoryId"></select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>Offer Price (optional)</label>
+                                                        <input type="text" class="form-control" asp-for="@Model.UpdateAdsDto.ProductPrice" id="adOfferPrice" placeholder="Offer Price">
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label for="exampleInputFile">Ad Cover/Main Image</label>
+                                                        <div class="input-group">
+                                                            <div class="custom-file">
+                                                                <input type="file" class="custom-file-input" asp-for="@Model.MainImage" id="AdCoverImage" accept=".jpg,.png,.gif">
+                                                                <label class="custom-file-label AdCoverImage" for="AdCoverImage">Select Image</label>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label for="exampleInputFile">Other Images</label>
+                                                        <div class="input-group">
+                                                            <div class="custom-file">
+                                                                <input type="file" class="custom-file-input" asp-for="@Model.AdImages" id="AdImage1" multiple accept=".jpg,.png,.gif">
+                                                                <label class="custom-file-label AdImage1" for="AdImage1">Select Image(s)</label>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label>Ad Details</label>
+                                                        <textarea asp-for="@Model.UpdateAdsDto.Desc" class="form-control" id="adDetails" placeholder="Ad Details"></textarea>
+                                                    </div>
+                                                </div>
+
+                                            </div>                                         
+                                            <div class="modal-footer editFooter">
+                                                <button type="submit" asp-page-handler="UpdateAds" class="btn btn-primary mt-4">Save Changes</button>
+                                                <input type="hidden" name="uadId" id="uadId" value="" />
+                                                <input type="hidden" name="ucampaignId" id="ucampaignId" value="" />
+                                            </div>
+                                        </form>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+
+                </div>
+
+                <!-- /.row (main row) -->
+            </div>
+                                                            }
+            <!-- /.content-wrapper -->
+            <!-- Control Sidebar -->
+            <aside class="control-sidebar control-sidebar-dark">
+                <!-- Control sidebar content goes here -->
+            </aside>
+            <!-- /.control-sidebar -->
+        </div>
+    </section>
+</div>

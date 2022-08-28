@@ -1,0 +1,113 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.categoryCountriesModel
+@{
+    ViewData["Title"] = "Countries";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="float-left">Select Country </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">Home</a></li>
+                        <li class="breadcrumb-item active">Country</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 mt-2">
+                    <!-- Profile Image -->
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-body table-responsive">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Country</th>
+                                        <th>بلد</th>
+                                        <th>Status</th>
+                                        <th>Cities</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.CountryDto != null)
+                                    {
+
+                                        @foreach (var country in Model.CountryDto)
+                                        {
+                                            int randId = new Random().Next(1000);
+                                            <tr>
+                                                <td class="name"><div class="flag"><img src="@country.Logo" /></div></td>
+                                                <td>@country.Country</td>
+                                                <td>@country.CountryAr</td>
+                                                <td>
+                                                    <a href="#">
+                                                        @if (country.IsActive)
+                                                        {
+                                                            <span class="status badge bg-success">Active</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="status badge bg-danger">Inactive</span>
+                                                        }
+                                                    </a>
+                                                </td>
+                                                <td><a asp-page="/Admin/Categories/categoryCities" asp-route-countryId="@country.Id" asp-route-countryName="@country.Country" asp-route-countryNameAr="@country.CountryAr" class="mr-2">View Cities</a></td>
+                                                <td class="links">
+                                                    @if (country.IsActive)
+                                                    {
+                                                        var formId = "form_" + randId.ToString();
+                                                    <form id="@formId" asp-page-handler="ActivateDeactivateCountry" method="post">
+                                                        <input type="hidden" name="countryId" value="@country.Id" />
+                                                        <input type="hidden" name="IsActive" value="true" />
+                                                        <input type="hidden" name="countryName" value="@country.Country" />
+                                                        <input type="hidden" name="countryNameAr" value="@country.CountryAr" />
+                                                        <a href="javascript:$('#@formId').submit();" class="mr-2 text-danger">Deactivate</a>
+                                                    </form>
+                                                    }
+                                                    else
+                                                    {
+                                                        var formId = "form_" + randId.ToString();
+                                                <form id="@formId" asp-page-handler="ActivateDeactivateCountry" method="post">
+                                                    <a href="javascript:$('#@formId').submit();" class="mr-2 text-success">Activate</a>
+                                                    <input type="hidden" name="countryId" value="@country.Id" />
+                                                    <input type="hidden" name="IsActive" value="false" />
+                                                    <input type="hidden" name="countryName" value="@country.Country" />
+                                                    <input type="hidden" name="countryNameAr" value="@country.CountryAr" />
+                                                </form>
+                                                    }
+                                                </td>
+
+                                            </tr>
+                                            randId++;
+                                        }
+
+                                    }
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>

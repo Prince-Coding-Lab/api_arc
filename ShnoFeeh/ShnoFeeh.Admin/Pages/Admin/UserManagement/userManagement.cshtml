@@ -1,0 +1,196 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.userManagementModel
+@{
+    ViewData["Title"] = "User Management";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var t = $('#tblUsers').DataTable({
+            "columnDefs": [{
+                "searchable": false,
+                "orderable": false,
+                "targets": 0
+            }],
+            "order": [[1, 'asc']]
+        });
+
+        t.on('order.dt search.dt', function () {
+            t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                cell.innerHTML = i + 1;
+            });
+        }).draw();
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).on("click", ".referenceClass", function () {
+        var userId = $(this).data('id');
+        $(".modal-footer #userId").val(userId);
+    });
+</script>
+<style>
+    form {
+        display: inline-block;
+    }
+</style>
+
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="float-left">@SharedLocalizer["user_management"] </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">@SharedLocalizer["home"]</a></li>
+                        <li class="breadcrumb-item active">@SharedLocalizer["user_management"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 mt-2">
+                    <!-- Profile Image -->
+                    <div class="card">
+                        @if (!String.IsNullOrEmpty(Model.ErrorMessage))
+                        {
+                            <p id="ErrorMessage" class="" style="color:red;">@Model.ErrorMessage</p>
+                        }
+                        @if (!String.IsNullOrEmpty(Model.SuccessMessage))
+                        {
+                            <p id="SuccessMessage" class="" style="color:darkgreen;">@Model.SuccessMessage</p>
+                        }
+                        <!-- /.card-header -->
+                        <div class="card-body table-responsive">
+                            <table id="tblUsers" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>@SharedLocalizer["user_name"]</th>
+                                        <th>@SharedLocalizer["role"]</th>
+                                        <th>@SharedLocalizer["date"]</th>
+                                        <th>@SharedLocalizer["activation_status"]</th>
+                                        <th>@SharedLocalizer["action"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.UserDto != null && @Model.UserDto.Count > 0)
+                                    {
+                                        int randId = new Random().Next(1000);
+                                        @foreach (var user in @Model.UserDto)
+                                        {
+                                            int randsId = new Random().Next(1023);
+                                            var formsId = "form_" + randsId.ToString();
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <form asp-page-handler="ToProfile" id="@formsId" method="post">
+                                                <a class="nav-link" href="javascript:document.getElementById('@formsId').submit()">@user.FirstName @user.LastName</a>
+                                                <input type="hidden" name="user" value="@user.Id" />
+                                            </form>
+                                        </td>
+
+                                        <td>@user.RoleName</td>
+                                        <td data-order="@((Convert.ToDateTime(user.CreatedDate)).ToString("yyyyMMdd"))">@((Convert.ToDateTime(user.CreatedDate)).ToString("dd-MM-yyyy hh:mm:ss tt"))</td>
+                                        @if (@user.UserStatus == "Active")
+                                        {
+                                            <td><a href="#"><span class="status badge bg-success">@user.UserStatus</span></a></td>
+                                        }
+                                        else if (@user.UserStatus == "InActive")
+                                        {
+                                            <td><a href="#"><span class="status badge bg-danger">@user.UserStatus</span></a></td>
+                                        }
+                                        else if (@user.UserStatus == "Pending Approval")
+                                        {
+                                            <td><a href="#"><span class="status badge bg-info">@user.UserStatus</span></a></td>
+                                        }
+                                        else
+                                        {
+                                            <td><a href="#"><span class="status badge bg-info">@user.UserStatus</span></a></td>
+                                        }
+
+                                        <td class="links">
+                                            @if (@user.UserStatus == "Active")
+                                            {
+                                                var formId = "form_" + randId.ToString();
+                                                <form id="@formId" asp-page-handler="ActivateDeactivateUser" method="post">
+                                                    <input type="hidden" name="userId" value="@user.Id" />
+                                                    <a href="javascript:$('#@formId').submit();" class="mr-2">@SharedLocalizer["deactivate"]</a>
+                                                </form>
+                                            }
+                                            else if (@user.UserStatus == "InActive")
+                                            {
+                                                var formId = "form_" + randId.ToString();
+                                                <form id="@formId" asp-page-handler="ActivateDeactivateUser" method="post">
+                                                    <a href="javascript:$('#@formId').submit();" class="mr-2 text-success">@SharedLocalizer["activate"]</a><input type="hidden" name="userId" value="@user.Id" />
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                var formId = "form_" + randId.ToString();
+                                                <form id="@formId" asp-page-handler="ActivateDeactivateUser" method="post">
+                                                    <a href="javascript:$('#@formId').submit();" class="mr-2 text-success">@SharedLocalizer["approve"]</a><input type="hidden" name="userId" value="@user.Id" />
+                                                </form>
+                                            }
+                                            | @*<a href="void(0)" class="ml-2 mr-2" data-toggle="modal" data-target="#modal-default"><i class="fas fa-pen"></i></a> |*@
+
+                                            <a href="#" data-target="#myModal" data-toggle="modal" data-id="@user.Id" class="referenceClass ml-3"><i class="far fa-trash-alt"></i></a>
+                                        </td>
+                                    </tr>
+                                            randId++;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Model.UserDto == null && String.IsNullOrEmpty(Model.ErrorMessage))
+                                            Response.Redirect("/Admin/Account/login");
+                                    }
+                                </tbody>
+
+                            </table>
+                            <!--Model Dialog for Delete-->
+                            <div style="margin: 20px;">
+                                <div id="myModal" class="modal fade" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">@SharedLocalizer["confirmation"]</h5>
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>@SharedLocalizer["delete_user"]</p>
+                                                <p class="text-secondary"><small>@SharedLocalizer["permenantly_delete_user"]</small></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">@SharedLocalizer["cancel"]</button>
+                                                <form asp-page-handler="Delete" method="post">
+                                                    <button type="submit" class="btn btn-primary">@SharedLocalizer["delete"]</button>
+                                                    <input type="hidden" name="userId" id="userId" value="" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>

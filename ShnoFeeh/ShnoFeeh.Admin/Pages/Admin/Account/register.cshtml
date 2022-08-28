@@ -1,0 +1,221 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.Account.registerModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Pages/Admin/Shared/_LoginLayout.cshtml";
+}
+<script language="javascript" type="text/javascript">
+    function GetCity(_countryId) {
+
+        var procemessage = "<option value='0'> Please wait...</option>";
+        $("#ddlCity").html(procemessage).show();
+        var url = "/Admin/Account/register?handler=City";
+
+        $.ajax({
+            url: url,
+            data: { countryId: _countryId },
+            cache: false,
+            type: "GET",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "json",
+            success: function (data) {
+                var markup = "<option value='' disabled selected>City</option>";
+                for (var x = 0; x < data.length; x++) {
+                    markup += "<option value=" + data[x].id + ">" + data[x].cityName + "</option>";
+                }
+                $("#ddlCity").html(markup).show();
+                $('#UserCreateDto_CityId').val(data[0].id);
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+
+    }
+    function SetCity(city) {
+        $('#UserCreateDto_CityId').val(city);
+    }
+</script>
+<script>
+
+    $(document).ready(function () {
+        $('#UserCreateDto_CountryCode').val("+1");
+        $(".dropdown-menu a").click(function () {
+            if ($(this).text() == "+1") {
+                $("#dropdownMenuLink").html("<img src='/dist/img/usa.png' class='pr-2'>" + $(this).text());
+            }
+            else if ($(this).text() == "+91") {
+                $("#dropdownMenuLink").html("<img src='/dist/img/kuwait.jpg' class='pr-2'>" + $(this).text());
+            }
+            else if ($(this).text() == "+21") {
+                $("#dropdownMenuLink").html("<img src='/dist/img/germany.png' class='pr-2'>" + $(this).text());
+            }
+            $('#UserCreateDto_CountryCode').val($(this).text());
+        });
+    });
+</script>
+<div class="reg-box">
+    <div class="reg-logo">
+        <img src="~/dist/img/logo.png" alt="Shnofeeh Logo" class="loginlogo">
+    </div>
+    <!-- /.login-logo -->
+    <div class="card mt-5">
+        <div class="card-body login-card-body">
+            <p class="login-box-msg">Register as a Company on ShnoFeeh Admin Panel</p>
+
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" asp-for="@Model.UserCreateDto.FirstName" placeholder="First Name" required maxlength="15">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" asp-for="@Model.UserCreateDto.LastName" placeholder="Last Name" required maxlength="15">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" asp-for="@Model.UserCreateDto.Email" placeholder="Email" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-5 col-5">
+                                <div class="form-group">
+                                    <div class="dropdown show countrybox">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <img src="~/dist/img/usa.png" class="pr-2">+1
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                            <a class="dropdown-item" href="#"><img src="~/dist/img/usa.png" class="pr-2">+1</a>
+                                            <a class="dropdown-item" href="#"><img src="~/dist/img/kuwait.jpg" class="pr-2">+91</a>
+                                            <a class="dropdown-item" href="#"><img src="~/dist/img/germany.png" class="pr-2">+21</a>
+                                        </div>
+                                        @Html.HiddenFor(model => Model.UserCreateDto.CountryCode)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-7 col-7">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" asp-for="@Model.UserCreateDto.PhoneNumber" placeholder="Phone Number" required pattern="^[0-9]{10}$">
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-phone"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" asp-for="@Model.UserCreateDto.CompanyName" placeholder="Company Name" required maxlength="30">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <select class="form-control" asp-for="@Model.UserCreateDto.CompanyTypeId" required>
+                                <option value="" disabled selected>Company Type</option>
+                                <option value="1">IT</option>
+                                <option value="2">Electronics</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <select asp-for="@Model.UserCreateDto.CountryId"
+                                    class="form-control"
+                                    asp-items="@(new SelectList(Model.CountryDto,"Id","Country"))"
+                                    onchange="javascript:GetCity(this.value);" required>
+                                <option value="" disabled selected>Country</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <select id="ddlCity" name="ddlCity" asp-for="@Model.UserCreateDto.CityId" asp-items="@(new SelectList(Model.CityDto,"Id","CityName"))" onchange="javascript:SetCity(this.value)" class="form-control" required>
+                                <option disabled selected>City</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                @Html.HiddenFor(model => Model.UserCreateDto.CityId)
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <input type="password" class="form-control" placeholder="Password" asp-for="@Model.UserCreateDto.Password" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <input type="password" class="form-control" asp-for="@Model.ConfirmPassword" placeholder="Confirm Password" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <!-- /.col -->
+                    <div class="col-md-6 mt-3">
+                        <input type="submit" asp-page-handler="CreateUser" class="btn btn-primary btn-block" value="Register">
+                    </div>
+                    <div class="col-md-6 mt-3 text-right">
+                        <span>Already Have an account ?</span><br />
+                        <a asp-page="/Admin/Account/login">Login Here</a>
+                    </div>
+                    @if (!String.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <p id="ErrorMessage" class="" style="color:red;">@Model.ErrorMessage</p>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.SuccessMessage))
+                    {
+                        <p id="SuccessMessage" class="" style="color:darkgreen;">@Model.SuccessMessage</p>
+                    }
+                    <!-- /.col -->
+                </div>
+            </form>
+        </div>
+        <!-- /.login-card-body -->
+    </div>
+</div>

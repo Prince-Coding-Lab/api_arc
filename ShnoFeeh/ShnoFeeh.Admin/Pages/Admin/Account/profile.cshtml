@@ -1,0 +1,311 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.profileModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+<script>
+    $(function () {
+        $('#exampleInputFile').change(function (e) {
+            var names = $.map(e.target.files, function (val) { return val.name; });
+
+            //var fileName = e.target.files[0].name;
+            $('.custom-file-label').html(names[0]);
+        });
+    });
+</script>
+<script language="javascript" type="text/javascript">
+    function GetCity(_countryId) {
+
+        var procemessage = "<option value='0'> Please wait...</option>";
+        $("#ddlCity").html(procemessage).show();
+        var url = "/Admin/Account/profile?handler=City";
+
+        $.ajax({
+            url: url,
+            data: { countryId: _countryId },
+            cache: false,
+            type: "GET",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "json",
+            success: function (data) {
+                var markup = "";
+                for (var x = 0; x < data.length; x++) {
+                    markup += "<option value=" + data[x].id + ">" + data[x].cityName + "</option>";
+                }
+                $("#ddlCity").html(markup).show();
+                $('#UserDto_CityId').val(data[0].id);
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+
+    }
+    function SetCity(city) {
+        $('#UserDto_CityId').val(city);
+    }
+</script>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    @if (!Model.isFromUserManagement)
+                    {
+                        <h1>My Profile</h1>
+                    }
+                    else
+                    {
+                        <h1>@Model.UserDto.FirstName&nbsp;@Model.UserDto.LastName's Profile</h1>
+                    }
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">Home</a></li>
+                        <li class="breadcrumb-item active">User Profile</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+               
+                <div class="col-md-6 offset-md-3 mt-5">
+                    @if (Model.SuccessMessage != "")
+                    {
+                        <p id="SuccessMessage" class="" style="color:green;margin-top:1rem;">@Model.SuccessMessage</p>
+                    }
+                    @if (Model.ErrorMessage != "")
+                    {
+                        <p id="ErrorMessage" class="" style="color:red;margin-top:1rem;">@Model.ErrorMessage</p>
+                    }
+                    <!-- Profile Image -->
+                    <div class="card card-primary card-outline">
+                        <div class="card-body box-profile">
+                            <div class="profileimg text-left">
+                                @if (!string.IsNullOrEmpty(Model.UserDto.Photo))
+                                {
+                                    <img src="@Model.UserDto.Photo" class="profile-user-img img-fluid img-circle" height="100" width="100"><p></p>
+                                }
+                                else
+                                {
+                                    <img src="/dist/img/EmptyImage.jpg" class="profile-user-img img-fluid img-circle"><p></p>
+                                }
+                                @*@if (!Model.isFromUserManagement)
+                    {
+                        <div class="editprofile" data-toggle="modal" data-target="#exampleModalCenter"><i style="margin-bottom:10px" class="fas fa-pen"></i></div>
+                    }
+                    else
+                    {
+                        <p></p>
+                    }*@
+                            </div>
+                            @*<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <h4 class="mb-4 float-left w-90">Change Profile Picture</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <div class="picpreview float-left mr-4">
+                                    @if (!string.IsNullOrEmpty(@Model._sessionManager.GetString(SessionItems.Photo)))
+                                    {
+                                        <img src="@Model._sessionManager.GetString(SessionItems.Photo)" class="profile-user-img img-fluid img-circle">
+                                    }
+                                    else
+                                    {
+                                        <img src="/dist/img/EmptyImage.jpg" class="profile-user-img img-fluid img-circle">
+                                    }
+                                </div>
+                                <form class="uploadprofileimage float-left" enctype="multipart/form-data" method="post" asp-page-handler="UploadProfilePhoto">
+                                    <div class="form-group">
+                                        <label for="exampleFormControlFile1">Upload Image</label>
+                                        <input type="file" class="form-control-file" id="exampleFormControlFile1" value="@Model.FileUpload" asp-for="FileUpload" onchange="this.form.submit()">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+                            <ul class="list-group list-group-unbordered mb-3">
+                                <li class="list-group-item">
+                                    <b>User Type</b> <a class="float-right">@Model.UserDto.RoleName</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Email Address</b> <a class="float-right">@Model.UserDto.Email</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Phone Number</b> <a class="float-right">@Model.UserDto.CountryCode @Model.UserDto.PhoneNumber</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Company Name</b> <a class="float-right">@Model.UserDto.CompanyName</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Company Type</b> <a class="float-right">@Model.UserDto.CompanyType</a>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <b>Last Login</b> <a class="float-right">@((Convert.ToDateTime(Model.UserDto.Lastlogin)).ToString("dd-MM-yyyy hh:mm:ss tt"))</a>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <b>Email Confirmed</b> <a class="float-right">@Model.UserDto.EmailConfirmed</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Phone Number Confirmed</b> <a class="float-right">@Model.UserDto.PhoneNumberConfirmed</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Status</b> <a class="float-right">@Model.UserDto.UserStatus</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Date Created</b> <a class="float-right">@((Convert.ToDateTime(Model.UserDto.CreatedDate)).ToString("dd-MM-yyyy hh:mm:ss tt"))</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Country</b> <a class="float-right">@Model.UserDto.Country</a>
+                                </li>
+                                @*<li class="list-group-item">
+                        <b>City</b> <a class="float-right">@Model.UserDto.City</a>
+                    </li>*@
+                            </ul>
+                            @if (!Model.isFromUserManagement)
+                            {
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <a data-toggle="modal" data-target="#updateprofile" class="btn btn-primary btn-block"><b>Edit Profile</b></a>
+                                    </div>
+                                    <div class="col-md-4 text-center pt-2 pl-md-5">
+                                        <a asp-page="/Admin/Account/changePassword"><b>Change Password</b></a>
+                                    </div>
+                                    <div class="col-md-4 text-md-right text-center pt-2 pl-md-5">
+                                        <a asp-action="AdminLogout" class=""><b>Logout</b></a>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<div class="modal fade" id="updateprofile" tabindex="-1" role="dialog" aria-labelledby="updateprofilelabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateprofilelabel">Update Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form role="form" enctype="multipart/form-data" method="post">
+                    <div class="row">
+                        <div class="col-4">
+                            @if (!string.IsNullOrEmpty(Model.UserUpdateDto.Photo))
+                            {
+                                <img src="@Model.UserUpdateDto.Photo" class="profile-user-img img-fluid img-circle" height="100" width="100">
+                            }
+                            else
+                            {
+                                <img src="/dist/img/EmptyImage.jpg" class="profile-user-img img-fluid img-circle">
+                            }
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" class="form-control" asp-for="@Model.UserUpdateDto.FirstName" placeholder="Name" required maxlength="15">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" class="form-control" asp-for="@Model.UserUpdateDto.LastName" placeholder="Name" required maxlength="15">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>E-Mail Address</label>
+                                <input type="email" class="form-control" placeholder="e-mail address" asp-for="@Model.UserUpdateDto.Email" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>Contact Number</label>
+                                <input type="tel" class="form-control" placeholder="Enter Number" asp-for="@Model.UserUpdateDto.PhoneNumber" maxlength="10" pattern="^[0-9]*$" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>Company Name</label>
+                                <input type="text" class="form-control" placeholder="Enter Name" asp-for="@Model.UserUpdateDto.CompanyName" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label>Country</label>
+                                <select asp-for="@Model.UserUpdateDto.CountryId"
+                                        class="form-control"
+                                        asp-items="@(new SelectList(Model.CountryDto,"Id","Country"))"
+                                        onchange="javascript:GetCity(this.value);">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="exampleInputFile">Profile Image</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+
+                                        <input type="file" class="custom-file-input" id="exampleInputFile" asp-for="FileUpload" accept=".jpg,.png,.gif">
+                                        <label class="custom-file-label" for="exampleInputFile">Select an Image</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <!-- select -->
+                            <div class="form-group">
+                                <label>City</label>
+                                <select id="ddlCity" name="ddlCity" asp-for="@Model.UserUpdateDto.CityId" asp-items="@(new SelectList(Model.CityDto,"Id","CityName"))" onchange="javascript:SetCity(this.value)" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    @Html.HiddenFor(model => Model.UserUpdateDto.CityId)
+                    <div class="modal-footer">
+                        <button type="submit" asp-page-handler="UpdateProfile" class="btn btn-primary mt-4">Save Changes</button>
+                    </div>
+                </form>
+
+            </div>
+            
+        </div>
+    </div>
+</div>

@@ -1,0 +1,221 @@
+﻿@using ShnoFeeh.API.Core.Dto;
+@inject ISessionManager _sessionManager
+@{
+    string GetRole()
+    {
+        if (_sessionManager.GetObject<UserDto>("userInfo") != null)
+        {
+            var user = _sessionManager.GetObject<UserDto>("userInfo");
+            return user.RoleName;
+        }
+        else
+        {
+            return "";
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShnoFeehAdmin</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Font Awesome -->
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Tempusdominus Bbootstrap 4 -->
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
+
+
+    @if (CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft)
+    {
+
+        <link rel="stylesheet" href="~/dist/css/Shnofeeh-admin.css">
+        <link rel="stylesheet" href="~/dist/css/Shnofeeh-only-rtl.css">
+
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/dist/css/Shnofeeh-admin.css">
+    }
+
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
+
+    <!-- jQuery -->
+    <script src="~/plugins/jquery/jquery.min.js"></script>
+    <script src="~/plugins/jquery/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="~/plugins/datatables/jquery.dataTables.min.css">
+
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <script>$(document).ready(function () {
+            $(".nav-sidebar li a").click(function () {
+                var id = $(this).attr("id");
+                $('#' + id).siblings().find(".active").removeClass("active");
+                $('#' + id).addClass("active");
+                localStorage.setItem("selectedolditem", id);
+            });
+
+            var selectedolditem = localStorage.getItem('selectedolditem');
+
+            if (selectedolditem != null) {
+                if (selectedolditem != "home") {
+                    $('#home').removeClass("active");
+                }
+                $('#' + selectedolditem).siblings().find(".active").removeClass("active");
+                $('#' + selectedolditem).addClass("active");
+            }
+        });</script>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+
+        <!-- Navbar -->
+        <!-- for header code -->
+        @(await Html.RenderComponentAsync<HeaderComponent>(RenderMode.ServerPrerendered))
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a asp-page="/Admin/Dashboard" class="brand-link">
+                <img src="~/dist/img/logo.png" alt="Shnofeeh Logo" class="brand-image">
+
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-2 mb-2 d-flex">
+                    <div class="info">
+                        <a href="#" class="d-block">Navigation</a>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                        with font-awesome or any other icon font library -->
+
+                        <li class="nav-item">
+                            <a asp-page="/Admin/Dashboard" class="nav-link active" id="home">
+                                <i class="nav-icon fas fa-home"></i>
+                                <p>
+                                    Home
+                                </p>
+                            </a>
+                        </li>
+                        @if (GetRole() == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a asp-page="/Admin/UserManagement/userManagement" class="nav-link" id="user">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p>
+                                        User Management
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-page="/Admin/Categories/categoryCountries" class="nav-link" id="categories">
+                                    <i class="nav-icon fas fa-box"></i>
+                                    <p>
+                                        Categories
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a asp-page="/Admin/ads/adListing" class="nav-link" id="campaign">
+                                <i class="nav-icon fas fa-list"></i>
+                                <p>
+                                    @{var name = GetRole() == "Admin" ? "Ad" : "Campaign";}
+                                    @name Listing
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item has-treeview">
+                            <a asp-page="/Admin/Payments/payments" class="nav-link" id="payments">
+                                <i class="nav-icon fas fa-wallet"></i>
+                                <p>
+                                    Payments
+                                </p>
+                            </a>
+                        </li>
+                        @if (GetRole() == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a asp-page="/Admin/Ads/adPrice" class="nav-link" id="price">
+                                    <i class="nav-icon fas fa-money-check-alt"></i>
+                                    <p>
+                                        Ads Pricing
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a asp-action="AdminLogout" class="nav-link">
+                                <i class="nav-icon fas fa-sign-out-alt"></i>
+                                <p>
+                                    Logout
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- ./wrapper -->
+    <footer class="main-footer text-center">
+        © Copyright 2020 ShnohFeeh | All rights reserved.
+    </footer>
+
+    <!-- jQuery UI 1.11.4 -->
+    @*<script src="~/plugins/jquery-ui/jquery-ui.min.js"></script>*@
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    @*<script>$.widget.bridge('uibutton', $.ui.button)</script>*@
+    <!-- Bootstrap 4 -->
+    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- ChartJS -->
+    @*<script src="~/plugins/chart.js/Chart.min.js"></script>*@
+    <!-- Sparkline -->
+    @*<script src="~/plugins/sparklines/sparkline.js"></script>*@
+    <!-- JQVMap -->
+    @*<script src="~/plugins/jqvmap/jquery.vmap.min.js"></script>
+        <script src="~/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>*@
+    <!-- jQuery Knob Chart -->
+    @*<script src="~/plugins/jquery-knob/jquery.knob.min.js"></script>*@
+    <!-- daterangepicker -->
+    <script src="~/plugins/moment/moment.min.js"></script>
+    <script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Summernote -->
+    @*<script src="~/plugins/summernote/summernote-bs4.min.js"></script>*@
+    <!-- overlayScrollbars -->
+    @*<script src="~/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>*@
+    <!-- AdminLTE App -->
+    <script src="~/dist/js/adminlte.js"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="~/dist/js/pages/dashboard.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="~/dist/js/demo.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

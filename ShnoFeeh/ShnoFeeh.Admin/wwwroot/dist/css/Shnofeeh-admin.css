@@ -1,0 +1,280 @@
+/*custome css*/
+
+.usercust{float: left; overflow: hidden}
+.usercust span{float: left;}
+.usercust img{float: left; max-width: 100%; max-height: 100%; margin-left: 20px}
+.brand-link{text-align: center; height: 110px; border-bottom: none}
+.brand-link .brand-image{float: none; max-height: 100%; margin-left:0}
+.layout-fixed .main-sidebar{background: #f3f3f3}
+.brand-link {border-bottom: 1px solid rgba(0,0,0,0.3);}
+.sidebar{background: #424242}
+.sidebar a {color: #ffffff!important;}
+
+.user-panel{border-bottom: none!important;}
+.sidebar{padding: 0}
+.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active, .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active{background: #FF0000; color: #fff; border-radius: 0;}
+.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active p,  .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active p{color: #fff;}
+.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active i,  .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active i{color: #fff;}
+.nav-sidebar .nav-link p {color: #474747;}
+
+.nav-sidebar .nav-link p{color: #ffffff}
+.nav-sidebar .nav-link i{color: #ffffff}
+.nav-sidebar>.nav-item{margin-bottom: 20px; font-weight: 300; font-size: 18px}
+.bg-info{background-color: #000000!important}
+.bg-success{background-color: #63BF26!important}
+.bg-warning{background-color: #424242!important; color: #fff!important}
+.bg-danger{background-color: #E93F33!important}
+.bg-warning a{color: #fff!important}
+.small-box{min-height: 128px;}
+.small-box h3 {
+    font-size: 2.2rem;
+    font-weight: 300;
+    margin: 0 0 0 0;
+    padding: 0;
+    white-space: break-spaces;
+    font-size: 24px!important;
+}
+.small-box p {font-size: 28px; font-weight: 100}
+.small-box>.small-box-footer{width: 100%; position: absolute; bottom: 0}
+.main-footer{margin-left: 0!important; background: #424242; color: #fff; border: none; padding: 0.8rem}
+.name{font-weight: 600}
+.status{font-size: 16px; font-weight: 200}
+.links a{color: #474747}
+.btn-default{background: #fff}
+.table-striped tbody tr:nth-of-type(odd) {background-color: #f9f9f9;}
+.content-wrapper {
+    background: #f9f9f9;
+}
+.bdrb{border-bottom: 1px solid rgba(0,0,0,.125)}
+.card-title{font-size: 1.5rem; font-weight: 800}
+.sidebar-mini.sidebar-collapse.layout-fixed .brand-link{height: 67px}
+.btn-primary {
+    color: #fff;
+    background-color: #D8392F;
+    border-color: #D8392F;
+}
+.btn-primary:hover,.btn-primary:active, .btn-primary:focus {
+    border-color:  #54A421;
+    background-color: #54A421;
+    color: #fff;
+}
+
+.main-footer2{width: 100%; position: absolute; bottom: 0}
+a .status{cursor: pointer}
+.links {color: rgba(0,0,0,0.4);}
+.links a i.fa-pen{color: #63BF26}
+.links a i.fa-trash-alt{color: #E93F33  }
+.btn-secondary{background: #fff; border: 2px solid #00b7ff; color: #474747}
+.btn-secondary:hover, .btn-secondary:active, .btn-secondary:focus{background: #00536d}
+.prodimg{width: 100px; height: 70px;overflow: hidden}
+.prodimg img{max-width: 100%; height: auto}
+
+a{cursor: pointer!important}
+[role=button]{cursor:pointer}
+
+.loginlogo{width: 50%; margin-top: -40px}
+.breadcrumb-item a{color: #E93F33}
+.page-item.active .page-link{background-color: #424242; border-color: #424242;}
+.page-link{color: #E93F33}
+a {color: #63BF26; font-weight: 500}
+.flag{width: 30px; height: 30px; overflow: hidden; border-radius: 50%; margin: 0 auto}
+.flag img{width:100%; height: auto}
+.selectconties li span {color: #000}
+.selectconties li {color: #FF0000}
+h4.selectconties span {color: #FF0000}
+
+.categorybox {background: #F9F9F9; text-align: center; padding:20px; border-radius: 10px; margin-top:20px; min-height:190px}
+.categorybox .catimgbx {min-height: 70px}
+.categorybox p {margin-top: 15px}
+a.btn-primary {color: #fff}
+.addcategories .form-check-inline input[type=checkbox]{visibility: hidden}
+.addcategories .form-check-inline input[type=checkbox] + label .categorybox {min-height: 130px; padding-bottom: 5px;min-height: 150px; min-width: 120px; max-width: 120px}
+.addcategories .form-check-inline input[type=checkbox]:checked + label .categorybox {background: #d8392f; color: #fff; padding-bottom: 5px;}
+.addcategories label .categorybox .catimgbx {width: 40px; height:40px; min-height: auto;margin: 0 auto}
+.addcategories label .categorybox .catimgbx img {width:100%; height: auto}
+.addcategories .form-check-inline {align-items: start}
+.addcategories .form-check-inline .categorybox{padding: 20px 10px}
+a.btn-success {color: #fff}
+
+.adimg{width: 100px; overflow: hidden; margin: 0 auto}
+.adimg img{width:100%; height: auto}
+textarea {color: #495057; border: 1px solid #ced4da; padding: .375rem .75rem; font-size: 1rem; font-weight: 400; line-height: 1.5; width: 100%; min-height: 120px}
+.reg-box {width: 700px}
+.reg-logo {width:100%}
+.reg-logo img {width:20%; margin: 20px auto 0; display: inherit}
+.phonecode {width: 100%; height: 38px; padding: 10px 4px}
+.countrybox {border: 1px solid #e0e0e0; padding: 5px 10px; border-radius: 5px}
+
+.wrapper {
+    width: 100%;
+    margin: 0 auto 20px;
+
+}
+
+.confirmationouter {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    height: 80vh;
+    text-align: center
+}
+
+.confirmationinner {
+    text-align: center;
+    width: 100%;
+    padding-left: 15%
+
+}
+
+.confirmationinner h2 {
+    color: #63BF26;
+    font-size: 30px
+}
+
+.confirmationinner .mt5 {
+    margin-top: 3rem
+}
+
+.confirmationinner h1 {
+    font-weight: 700;
+    font-size: 50px
+}
+
+.confirmationinner p {
+    font-size: 20px;
+    font-weight: 400
+}
+
+.confirmationinner .paystatus {
+    margin-top: 2rem;
+}
+
+    .confirmationinner .paystatus p span {
+        background: #FCFCFC;
+        padding: 10px 20px;
+        font-weight: 600;
+        margin-left: 20px;
+        letter-spacing: 1px
+    }
+
+a.goto {
+    display: block;
+    background: #E93F33;
+    min-width: 100px;
+    max-width: 300px;
+    margin: 50px auto 10px;
+    border-radius: 5px;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 20px
+}
+
+.checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #7ac142;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #fff;
+    stroke-miterlimit: 10;
+    margin: 3% auto;
+    box-shadow: inset 0px 0px 0px #7ac142;
+    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px #7ac142;
+    }
+}
+
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 767px) {
+    .main-footer2{width: 100%; position: relative; bottom: 0}
+    .login-box, .register-box {width: 90%; margin: 0 auto;}
+    .login-logo, .register-logo{margin: 200px auto 20px;}
+    .reg-box{width:90%; margin: auto}
+}
+
+@media only screen and (min-device-width: 707px) and (max-device-width: 1023px) {
+
+}
+
+@media only screen and (min-device-width: 1500px) and (max-device-width: 3000px) {
+
+
+}
+
+@-webkit-keyframes dash {
+    0% {
+        stroke-dashoffset: 1000;
+    }
+
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes dash {
+    0% {
+        stroke-dashoffset: 1000;
+    }
+
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@-webkit-keyframes dash-check {
+    0% {
+        stroke-dashoffset: -100;
+    }
+
+    100% {
+        stroke-dashoffset: 900;
+    }
+}
+
+@keyframes dash-check {
+    0% {
+        stroke-dashoffset: -100;
+    }
+
+    100% {
+        stroke-dashoffset: 900;
+    }
+}

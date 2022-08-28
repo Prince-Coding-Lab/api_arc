@@ -1,0 +1,150 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.ad_priceModel
+@{
+    ViewData["Title"] = "Ad Price";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+<style>
+    .editable {
+        display: none;
+    }
+</style>
+<script>
+
+    var gAmount = 0, gId = 0;
+    function OnEdit(id, amount) {
+        $("#txtAmount" + id).removeClass("editable");
+        $("#lblAmount" + id).addClass("editable");
+
+        $("#lnkApply" + id).removeClass("editable");
+        $("#lnkEdit" + id).addClass("editable");
+        if (gAmount != 0 && gId == id) {
+            $("#inpAmount" + id).val(gAmount);
+        }
+        else {
+            $("#inpAmount" + id).val(Number(amount).toFixed(3));
+        }
+    }
+    function OnCancel(id) {
+        $("#txtAmount" + id).addClass("editable");
+        $("#lblAmount" + id).removeClass("editable");
+
+        $("#lnkApply" + id).addClass("editable");
+        $("#lnkEdit" + id).removeClass("editable");
+        $("#ErrorMessage").addClass("editable");
+        $("#SuccessMessage").addClassClass("editable");
+    }
+    function OnApply(id, dayOfWeek, currency) {
+        var amount = $("#inpAmount" + id).val();
+        $.ajax({
+            type: "POST",
+            url: '/Admin/Ads/adPrice?handler=UpdateAdsPrice',
+            data: { "id": id, "amount": amount, "dayOfWeek": dayOfWeek, "currency": currency },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType:"json",
+            success: function (data) {
+                $("#txtAmount" + id).addClass("editable");
+                $("#lblAmount" + id).removeClass("editable");
+
+                $("#lnkApply" + id).addClass("editable");
+                $("#lnkEdit" + id).removeClass("editable");
+                $("#ErrorMessage").addClass("editable");
+                $("#SuccessMessage").removeClass("editable");
+                $("#SuccessMessage").html("Price updated successfully !");
+                $("#lblAmount" + id).html(Number(amount).toFixed(3));
+                gAmount = Number(amount).toFixed(3);
+                gId = id;
+            },
+            error: function (data) {
+                debugger;
+                $("#ErrorMessage").removeClass("editable");
+                $("#SuccessMessage").addClass("editable");
+                $("#ErrorMessage").html("Some error occured: Try again later");
+            }   
+        })
+    }
+</script>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="float-left">Ad Pricing</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">Home</a></li>
+                        <li class="breadcrumb-item active">Ad Pricing</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 mt-2">
+                    <!-- Profile Image -->
+                    <div class="card">
+
+
+
+                        <!-- /.card-header -->
+                        <form role="form" method="post">
+                            <div class="card-body table-responsive">
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Day of the Week</th>
+                                            <th>Price Per Ad</th>
+                                            <th>Currency</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.AdsPricesDto != null)
+                                        {
+                                            @foreach (var adsPrice in Model.AdsPricesDto)
+                                            {
+                                        <tr>
+                                            <td>@adsPrice.DayOfWeek</td>
+                                            <td id="@("txtAmount" + adsPrice.Id.ToString())" class="editable">
+                                                <input type="number" id="@("inpAmount" + adsPrice.Id.ToString())" value="" class="form-control" required min="0" max="10" step="0.25">
+                                            </td>
+                                            <td id="@("lblAmount" + adsPrice.Id.ToString())">@adsPrice.Amount</td>
+                                            <td>@adsPrice.Currency</td>
+                                            <td class="links editable" id="@("lnkApply" + adsPrice.Id.ToString())">
+                                                <a id="@("anApply" + adsPrice.Id.ToString())" href="#" onclick="OnApply(@adsPrice.Id,'@adsPrice.DayOfWeek.ToString()','@adsPrice.Currency.ToString()')" class="mr-2 text-danger">@SharedLocalizer["apply_price"]</a> | &nbsp;
+                                                <a id="@("anCancel" + adsPrice.Id.ToString())" href="#" onclick="OnCancel(@adsPrice.Id)" class="mr-2 text-info">@SharedLocalizer["cancel"]</a>
+                                            </td>
+                                            
+                                            <td class="links" id="@("lnkEdit" + adsPrice.Id.ToString())"><a id="@("editApply" + adsPrice.Id.ToString())" onclick="OnEdit(@adsPrice.Id,@adsPrice.Amount.ToString())" href="#" class="mr-2 text-success">Edit Price</a></td>
+                                        </tr>
+                                            }
+                                        }
+
+
+                                </table>
+                            </div>
+                        </form>
+
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <p id="SuccessMessage" class="editable" style="color:green;margin-top:1rem;margin-left:10px"></p>
+
+            <p id="ErrorMessage" class="editable" style="color:red;margin-top:1rem;margin-left:10px"></p>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>

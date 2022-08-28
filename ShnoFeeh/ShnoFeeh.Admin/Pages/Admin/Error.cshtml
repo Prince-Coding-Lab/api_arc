@@ -1,0 +1,27 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1 class="text-danger">@SharedLocalizer["error."]</h1>
+<h2 class="text-danger">An error occurred while processing your request.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>@SharedLocalizer["request_id:"]</strong> <code>@Model.RequestId</code>
+    </p>
+}
+<script>
+    $(document).ready(function () {
+        $(".main-header").hide();
+        $(".main-sidebar").hide();
+        $(".pb-3").css("padding", "10px");
+    });
+</script>
+
+<h2>
+    @SharedLocalizer["please_try_again"]
+</h2>
+

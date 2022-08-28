@@ -1,0 +1,395 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.categoriesModel
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+<script>
+    $(function () {
+        $('#AdCoverImage').change(function (e) {
+            var names = $.map(e.target.files, function (val) { return val.name; });
+            $('.AdCoverImage').html(names[0]);
+        });
+        $(document).on("click", ".referenceClassEditImage", function () {
+            var adId = $(this).data('advertisementid');
+            var catName = $(this).data('categoryname');
+            var imgId = $(this).data('adimageid');
+            $(".EditAd #adId").val(adId);
+            $(".EditAd #editCatName").val(catName);
+            $(".EditAd #imgId").val(imgId);
+        });
+        $(document).on("click", ".referenceClass", function () {
+            var adId = $(this).data('advertisementid');
+            var imgId = $(this).data('adimageid');
+            var catName = $(this).data('catname');
+            $(".modal-footer #adDelId").val(adId);
+            $(".modal-footer #adDelImgId").val(imgId);
+            $(".modal-footer #adDelCatName").val(catName);
+        });
+    });
+    $(document).ready(function () {
+        var t = $('#tblAdvertisement').DataTable();
+    });
+    
+</script>
+<script>
+    $(function () {
+        $('#AdImage').change(function (e) {
+            $('.AdImage').html("Select Image");
+            var file, img;
+            var _URL = window.URL || window.webkitURL;
+            if ((file = this.files[0])) {
+                img = new Image();
+                var objectUrl = _URL.createObjectURL(file);
+                img.onload = function () {
+                    if (this.height > 90 || this.width > 160) {
+                        alert("Height and Width should be less than/equal to 90px and 160px respectively ");
+                    }
+                    else {
+                        var names = $.map(e.target.files, function (val) { return val.name; });
+                        $('.AdImage').html(names[0]);
+                    }
+                    _URL.revokeObjectURL(objectUrl);
+                };
+                img.src = objectUrl;
+            }
+        });
+
+    });
+</script>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="float-left">Categories</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">Home</a></li>
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Categories/categoryCountries">Country and City</a></li>
+                        <li class="breadcrumb-item active">Categories</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 mt-2">
+                    <!-- Profile Image -->
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-6 pl-0">
+                                    <ul class="list-inline ml-4 mt-4 selectconties">
+                                        <li class="list-inline-item"><span>Country : </span>@Model.CountryName @Model.CountryNameAr</li>
+                                        <li class="list-inline-item"><i class="fas fa-long-arrow-alt-right pl-2 pr-2"></i></li>
+                                        <li class="list-inline-item"><span>City : </span>@Model.CityName @Model.CityNameAr</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6 mt-3 text-right pr-3">
+                                    <a class="btn btn-success pl-5 pr-5 mr-4" data-toggle="modal" data-target="#exampleModalLong1">Create New Category</a>
+                                    @if (@Model.CategoryDto != null && Model.CategoryDto.Count() > 0)
+                                    {
+                                        <a class="btn btn-primary pl-5 pr-5" data-toggle="modal" data-target="#exampleModalLong">Remove Categories</a>
+                                    }
+
+                                    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <form method="post">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongTitle">Remove Categories</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="modal-body text-left addcategories">
+                                                        @if (@Model.CategoryDto != null)
+                                                        {
+
+                                                            for (int i = 0; i < Model.categoryCheck.Count(); i++)
+                                                            {
+                                                                string id = "chk" + Model.categoryCheck[i].Id;
+                                                                string option = "opt" + Model.categoryCheck[i].Id;
+                                                                <div class="form-check form-check-inline">
+                                                                    @Html.HiddenFor(x => Model.categoryCheck[i].Id)
+                                                                    @Html.CheckBoxFor(m => Model.categoryCheck[i].isChecked, new { @checked = Model.categoryCheck[i].isChecked, @id = id })
+                                                                    @*<input class="form-check-input" type="checkbox" id="@id" value="@option" checked>*@
+                                                                    <label class="form-check-label" for="@id">
+                                                                        <div class="categorybox">
+                                                                            <div class="catimgbx">
+                                                                                @if (Model.categoryCheck[i].Logo == null)
+                                                                                {
+                                                                                    <img src="~/dist/img/groceries.png" />
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <img src="@Model.categoryCheck[i].Logo" />
+                                                                                }
+                                                                            </div>
+                                                                            <p>@Model.categoryCheck[i].CatName</p>
+                                                                            <p>@Model.categoryCheck[i].CatNameAr</p>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                            }
+                                                        }
+
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" asp-page-handler="DeleteCategories" class="btn btn-primary">Save changes</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal fade" id="exampleModalLong1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle1" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongTitle1">Create New Category</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <form method="post" enctype="multipart/form-data">
+                                                    <div class="modal-body text-left addcategories">
+                                                        <div class="row mt-3">
+
+                                                            <div class="col-12">
+                                                                <div class="form-group">
+                                                                    <label>Category Name</label>
+                                                                    <input type="text" class="form-control" asp-for="@Model.addCategoryDto.CatName" placeholder="Enter Name" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="form-group">
+                                                                    <label>الفئة</label>
+                                                                    <input type="text" class="form-control" asp-for="@Model.addCategoryDto.CategoryAr" placeholder="اسم" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="form-group">
+                                                                    <label>Keywords</label>
+                                                                    <input type="text" class="form-control" asp-for="@Model.addCategoryDto.Keywords" placeholder="Enter Name" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="form-group">
+                                                                    <label for="exampleInputFile">Category Icon / Vector</label>
+                                                                    <div class="input-group">
+                                                                        <div class="custom-file">
+                                                                            <input type="file" class="custom-file-input" asp-for="@Model.FileUpload" id="AdCoverImage" accept=".jpg,.png,.gif" required>
+                                                                            <label class="custom-file-label AdCoverImage" for="AdCoverImage">Select Image</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            @*<div class="col-12">
+            <div class="form-group">
+                <label for="exampleInputFile">Advertisement</label>
+                <div class="input-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" asp-for="@Model.AdImageUpload" id="AdImage" accept=".jpg,.png,.gif">
+                        <label class="custom-file-label AdImage" for="AdImage">Select Image</label>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="submit" asp-page-handler="AddCategory" class="btn btn-primary">Create Category</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body table-responsive">
+                            <h4>Active Categories</h4>
+                            @if (Model.SuccessMessage != "")
+                            {
+                                <p id="SuccessMessage" class="" style="color:green;margin-top:1rem;">@Model.SuccessMessage</p>
+                            }
+                            @if (Model.ErrorMessage != "")
+                            {
+                                <p id="ErrorMessage" class="" style="color:red;margin-top:1rem;">@Model.ErrorMessage</p>
+                            }
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row">
+                                        @if (Model.CategoryDto != null)
+                                        {
+                                            @foreach (var category in Model.CategoryDto)
+                                            {
+                                                <div class="col-2">
+                                                    <div class="categorybox">
+                                                        <div class="catimgbx">
+                                                            @if (category.Logo == null)
+                                                            {
+                                                                <img src="~/dist/img/groceries.png" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <img style="max-width:60px" src="@category.Logo" />
+                                                            }
+                                                        </div>
+                                                        <p>@category.CatName</p>
+                                                        <p>@category.CategoryAr</p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                            <p></p>
+                            <h4 style="margin:20px 0px 30px 0px">Advertisements</h4>
+                            <table id="tblAdvertisement" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Advertisement Photo</th>
+                                        <th>Category Name</th>
+                                        <th>الفئة</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.AdvertismentDto != null)
+                                    {
+                                        @foreach (var ad in Model.AdvertismentDto)
+                                        {
+                                    <tr>
+                                        <td>
+                                            @if (ad.Images.Count() > 0 && @ad.Images[0].ImageUrl != null)
+                                            {
+                                                <div class="adimg">
+                                                    <img src="@ad.Images[0].ImageUrl" />
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="adimg">
+                                                    <img src="~/dist/img/EmptyImage.jpg" />
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>@ad.Category</td>
+                                        <td>@ad.CategoryAr</td>
+                                        <td>
+                                            <div class="float-left">
+                                                &nbsp;<a href="#" data-target="#updateAd" data-toggle="modal"
+                                                         data-advertisementId="@ad.Id"
+                                                         data-categoryName="@ad.Category"
+                                                         data-adImageId="@ad.Images[0].Id"
+                                                         class="referenceClassEditImage ml-0 mr-2"><i class="fas fa-pen"></i></a> |
+                                            </div>
+                                            <div class="float-left">
+                                                &nbsp;<a href="#" data-target="#deleteModal" data-toggle="modal"
+                                                         data-advertisementId="@ad.Id"
+                                                         data-adImageId="@ad.Images[0].Id"
+                                                         data-catName="@ad.Category" class="referenceClass ml-3"><i class="far fa-trash-alt"></i></a>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <div class="modal fade" id="updateAd" tabindex="-1" role="dialog" aria-labelledby="updateprofilelabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="updateprofilelabel">Update Advertisement Image</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <form role="form" enctype="multipart/form-data" method="post">
+
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputFile">Advertisement</label>
+                                                            <div class="input-group">
+                                                                <div class="custom-file">
+                                                                    <input type="file" class="custom-file-input" id="AdImage" asp-for="@Model.AdImageUpload" accept=".jpg,.png,.gif" required>
+                                                                    <label class="custom-file-label AdImage" for="AdImage">Select Image</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer EditAd">
+
+                                                    <button type="submit" asp-page-handler="UpdateAdvertisement" class="btn btn-primary mt-4">Save Changes</button>
+                                                    <input type="hidden" name="adId" id="adId" value="" />
+                                                    <input type="hidden" name="editCatName" id="editCatName" value="" />
+                                                    <input type="hidden" name="imgId" id="imgId" value="" />
+                                                    <button type="button" class="btn btn-secondary mt-4" data-dismiss="modal">Cancel</button>
+                                                </div>
+                                            </form>
+                                            
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Model Dialog for Delete-->
+                            <div style="margin: 20px;">
+                                <div id="deleteModal" class="modal fade" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirmation</h5>
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete the advertisement?</p>
+                                                <p class="text-secondary"><small>This will permanently delete the Ad from the app.</small></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <form asp-page-handler="DeleteAd" method="post">
+                                                    <button type="submit" class="btn btn-primary">Delete</button>
+                                                    <input type="hidden" name="adDelId" id="adDelId" value="" />
+                                                    <input type="hidden" name="adDelImgId" id="adDelImgId" value="" />
+                                                    <input type="hidden" name="adDelCatName" id="adDelCatName" value="" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>

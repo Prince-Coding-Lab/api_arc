@@ -1,0 +1,132 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.categoryCitiesModel
+@{
+    ViewData["Title"] = "Cities";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+
+
+
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="float-left">Select City </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">Home</a></li>
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Categories/categoryCountries">Country</a></li>
+                        <li class="breadcrumb-item">Select City</li>
+                        @*<li class="breadcrumb-item"><a asp-page="/Admin/Categories/categoryCities"
+        asp-route-countryId="@Model._sessionManager.GetInt("countryId")"
+        asp-route-countryName="@Model._sessionManager.GetString("countryName")"
+        asp-route-countryNameAr="@Model._sessionManager.GetString("countryNameAr")">Select City</a></li>*@
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 mt-2">
+                    <!-- Profile Image -->
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-6 pl-0">
+                                    <ul class="list-inline ml-3 mt-4 selectconties">
+                                        <li class="list-inline-item"><span>Selected Country : </span>@Model.CountryName @Model.CountryNameAr</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table id="example1" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>City</th>
+                                        <th>مدينة</th>
+                                        <th>Status</th>
+                                        <th>Categories</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.CityDto != null)
+                                    {
+
+                                        @foreach (var city in Model.CityDto)
+                                        {
+                                            int randId = new Random().Next(1000);
+                                            <tr>
+                                                <td>@city.CityName</td>
+                                                <td>@city.CityAr</td>
+                                                <td>
+                                                    <a href="#">
+                                                        @if (city.IsActive)
+                                                        {
+                                                            <span class="status badge bg-success">Active</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="status badge bg-danger">Inactive</span>
+                                                        }
+                                                    </a>
+                                                </td>
+                                                <td><a asp-page="/Admin/Categories/categories" asp-route-cityId="@city.Id" asp-route-cityName="@city.CityName" asp-route-cityNameAr="@city.CityAr" class="mr-2">View Categories</a></td>
+                                                <td class="links">
+                                                    @if (city.IsActive)
+                                                    {
+                                                        var formId = "form_" + randId.ToString();
+                                                        <form id="@formId" asp-page-handler="ActivateDeactivateCity" method="post">
+                                                            <input type="hidden" name="cityId" value="@city.Id" />
+                                                            <input type="hidden" name="IsActive" value="true" />
+                                                            <input type="hidden" name="cityName" value="@city.CityName" />
+                                                            <input type="hidden" name="logo" value="@city.Logo" />
+                                                            <input type="hidden" name="country" value="@city.Country" />
+                                                            <input type="hidden" name="cityNameAr" value="@city.CityAr" />
+                                                            <a href="javascript:$('#@formId').submit();" class="mr-2 text-danger">Deactivate</a>
+                                                        </form>
+                                                    }
+                                                    else
+                                                    {
+                                                        var formId = "form_" + randId.ToString();
+                                                        <form id="@formId" asp-page-handler="ActivateDeactivateCity" method="post">
+                                                            <a href="javascript:$('#@formId').submit();" class="mr-2 text-success">Activate</a>
+                                                            <input type="hidden" name="cityId" value="@city.Id" />
+                                                            <input type="hidden" name="IsActive" value="false" />
+                                                            <input type="hidden" name="cityName" value="@city.CityName" />
+                                                            <input type="hidden" name="logo" value="@city.Logo" />
+                                                            <input type="hidden" name="country" value="@city.Country" />
+                                                            <input type="hidden" name="cityNameAr" value="@city.CityAr" />
+                                                        </form>
+                                                    }
+                                                </td>
+
+                                            </tr>
+                                            randId++;
+                                        }
+
+                                    }
+
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>

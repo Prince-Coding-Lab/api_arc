@@ -1,0 +1,11 @@
+<<<<<<< HEAD
+obj
+bin
+.vs
+=======
+\obj
+obj
+.vs
+bin
+/Tramatix.Admin
+>>>>>>> api

@@ -1,0 +1,30 @@
+﻿/* Additional RTL CSS */
+header{direction: rtl}
+.navbar-nav.ml-auto{margin-right: auto!important; margin-left:0!important}
+li.nav-item {margin-right: 20px; margin-left:0}
+.langhov img.pr-2{padding-left: .5rem!important; padding-right:0!important}
+.langhov i.ml-3{margin-right: 1rem!important; margin-left:0!important}
+.dropdown-menu-right {right: auto; left: 0;}
+main{text-align: right; direction: rtl}
+.bannersection h1{padding-right: 50px}
+.bannersection .bdrb{margin-right:50px}
+.bannersection p{padding-right: 50px}
+.bannerar{display: block}
+.banneren{display: none}
+footer{direction: rtl}
+footer .text-md-left{text-align:right!important}
+footer .text-md-right{text-align:left!important}
+.social{direction:ltr; padding-left: 30px}
+
+@media screen and (max-width: 767px) {
+.bannersection h1{padding-right: 0}
+.bannersection .bdrb{margin-right:0}
+.bannersection p{padding-right: 0}
+.bannersection ul{padding-right:0}
+footer .text-md-left{text-align: center!important}
+footer .text-md-right{text-align: center!important}
+footer ul{padding-right:0}
+.social{padding-left:0}
+ul.navbar-nav{text-align: left; padding-left: 10px}
+}
+/* Additional RTL CSS */

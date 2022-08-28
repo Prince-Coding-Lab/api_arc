@@ -1,0 +1,170 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.Ads.ad_detailsModel
+
+@{
+    ViewData["Title"] = "Ads Details";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+@{
+    string roleName = Model._sessionManager.GetString(SessionItems.RoleName);
+    string name = roleName == "Admin" ? "Ad" : "Campaign";
+
+}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="float-left">@name Details </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">@SharedLocalizer["home"]</a></li>
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Ads/adListing">@name @SharedLocalizer["listing"]</a></li>
+                        <li class="breadcrumb-item active">@name @SharedLocalizer["details"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 mt-2">
+                    <!-- Profile Image -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-6 pl-0">
+                                    <h4 class="selectconties pt-1">
+                                        @name Name : <span>@Model.AdsDto[0].CampaginName</span>
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body addetarabic">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>Ad Title</label>
+                                        <h5>@Model.AdsDto[0].Title</h5>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>Ad Category</label>
+                                        <h5>@Model.AdsDto[0].CatName</h5>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>Ad Details</label>
+                                        <h5>@Model.AdsDto[0].Desc</h5>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>Keywords</label>
+                                        <h5>@Model.AdsDto[0].Keyword</h5>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>Validity Dates </label>
+                                        <h5>@ShnoFeeh.Admin.Pages.Ads.IntExt.Ordinal(Model.AdsDto[0].StartDate.Value.Day) @Model.AdsDto[0].StartDate.Value.ToString("MMM") @Model.AdsDto[0].StartDate.Value.ToString("yyyy") - @ShnoFeeh.Admin.Pages.Ads.IntExt.Ordinal(Model.AdsDto[0].EndDate.Value.Day) @Model.AdsDto[0].EndDate.Value.ToString("MMM") @Model.AdsDto[0].EndDate.Value.ToString("yyyy") </h5>
+
+                                    </div>
+                                    @if (@Model.AdsDto[0].ProductPrice != null)
+                                    {
+                                        <div class="form-group mt-2">
+                                            <label>Offer Price</label>
+                                            <h5>KWD @Model.AdsDto[0].ProductPrice</h5>
+                                        </div>
+                                    }
+                                    <div class="form-group mt-2">
+                                        <label>Order Price</label>
+                                        <h5>KWD @Model.orderPrice</h5>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>Contact Number</label>
+                                        <h5>@Model.AdsDto[0].Phone</h5>
+                                    </div>
+                                    @*<div class="form-group mt-2">
+            <label>Email Address</label>
+            <h5>help@gmail.com</h5>
+        </div>*@
+                                    <div class="form-group mt-2">
+                                        <label>Website url </label>
+                                        <h5>@Model.AdsDto[0].URL</h5>
+                                    </div>
+
+                                    <div class="form-group mt-2">
+                                        <label>Active Link</label>
+                                        <h5>@Model.AdsDto[0].ActiveLink</h5>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>City</label>
+                                        <h5>@Model.AdsDto[0].City</h5>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>Company</label>
+                                        <h5>@Model.AdsDto[0].CreatedBy</h5>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>Created Date</label>
+                                        <h5>@((Convert.ToDateTime(Model.AdsDto[0].CreatedDate)).ToString("dd-MM-yyyy hh:mm:ss tt"))</h5>
+                                    </div>
+
+                                    <div class="form-group mt-2">
+                                        <label>Ad Status</label>
+                                        <h5>@Model.AdsDto[0].Status</h5>
+                                    </div>
+                                    <div class="form-group mt-2">
+                                        <label>No of Views</label>
+                                        <h5>@Model.AdsDto[0].Views</h5>
+                                    </div>
+                                </div>
+                                <div class="col-5 offset-1">
+                                    <div class="row">
+                                        @if (@Model.AdsDto[0].AdsMedia != null && @Model.AdsDto[0].AdsMedia.Count > 0)
+                                        {
+                                            var mainImage = @Model.AdsDto[0].AdsMedia.Where(x => x.IsMain == true).FirstOrDefault();
+                                            if (mainImage != null)
+                                            {
+                                                <div class="col-12">
+                                                    <h5 class="pl-2">Ad Cover/Main Image</h5>
+                                                    <img src="@mainImage.ImageUrl" class="img-fluid w-100" />
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="row">
+                                        @{ var images = @Model.AdsDto[0].AdsMedia.Where(x => x.IsMain == false).ToList();}
+                                        @if (images != null && images.Count() > 0)
+                                        {
+                                            int i = 0;
+                                            foreach (var image in images)
+                                            {
+                                                i++;
+                                                <div class="col-6 mt-5">
+                                                    <h5 class="pl-2">Ad Image @i</h5>
+                                                    <img src="@image.ImageUrl" class="img-fluid" />
+                                                </div>
+                                            }
+
+                                        }
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>

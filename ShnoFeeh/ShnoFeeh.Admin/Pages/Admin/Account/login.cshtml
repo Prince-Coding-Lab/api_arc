@@ -1,0 +1,78 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.Account.loginModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Pages/Admin/Shared/_LoginLayout.cshtml";
+}
+
+<div class="login-box">
+    <div class="login-logo">
+        <img src="~/dist/img/logo.png" alt="Shnofeeh Logo" class="loginlogo">
+    </div>
+    <!-- /.login-logo -->
+    <div class="card mt-5">
+        <div class="card-body login-card-body">
+
+            <p class="login-box-msg">Sign in to access ShnoFeeh Admin Panel</p>
+            @if (!String.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <p id="ErrorMessage" class="alert-danger" role="alert">@Model.ErrorMessage</p>
+            }
+            @if (!String.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <p id="ErrorMessage" class="alert-success" role="alert">@Model.SuccessMessage</p>
+            }
+            <form asp-page-handler="Login" method="post">
+                <div class="input-group mb-3">
+                    <input asp-for="AuthenticateModel.Username" type="email" id="email" class="form-control" placeholder="Email" required>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-envelope"></span>
+                        </div>
+                    </div>
+                </div>
+                <p id="EmailError" style="color:red;display:none; margin-bottom:10px;"></p>
+                <div class="input-group mb-3">
+                    <input asp-for="AuthenticateModel.Password" type="password" id="PasswordL" class="form-control" placeholder="Password" autocomplete="off" required>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-lock"></span>
+                        </div>
+                    </div>
+                </div>
+                <p id="PasswordError" style="color:red;display:none; margin-bottom:10px;"></p>
+                <div class="row">
+                    <div class="col-8">
+                        <div class="icheck-primary">
+                            <input type="checkbox" id="remember" asp-for="RememberMe">
+                            <label for="remember">
+                                Remember Me
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" id="RedirectURL" asp-for="RedirectURL" />
+                    <p id="SuccessMessage1" class="mt-5" style="color:green;display:none;">
+                    </p>
+                    <p id="btnLoginErros" class="mt-5" style="color:red;display:none;">
+                    </p>
+                    <!-- /.col -->
+                    <div class="col-12 mt-3">
+                        <input type="submit" class="btn btn-primary btn-block" value="Login" />
+                        @*<button type="submit" value="Login" class="" id="Login" style="display:none;" asp-page-handler="Login"></button>*@
+                    </div>
+                    <!-- /.col -->
+                </div>
+            </form>
+
+
+            <p class="mb-1 text-center mt-4">
+                <a asp-page="/Admin/Account/forgotPassword">I forgot my password</a>
+            </p>
+            <p class="mb-1 text-center mt-4">
+                Not Registered yet?
+                <a class="text-danger" asp-page="/Admin/Account/register">Click Here to Register</a>
+            </p>
+        </div>
+        <!-- /.login-card-body -->
+    </div>
+</div>

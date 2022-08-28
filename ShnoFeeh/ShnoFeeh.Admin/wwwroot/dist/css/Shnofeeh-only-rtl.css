@@ -1,0 +1,57 @@
+
+/* Extra CSS for Arabic only */
+
+.layout-fixed .main-sidebar {right: 0; left: auto}
+.main-header {direction:rtl}
+.navbar-nav.ml-auto {margin-right: auto!important; margin-left:0!important}
+.sidebar {direction:rtl; text-align:right}
+.sidebar ul.nav.nav-pills.nav-sidebar{padding-right:0!important}
+.navbar-nav{padding-right:0}
+table.dataTable tbody th, table.dataTable tbody td{text-align:right}
+.card-title{float:right}
+.dataTables_wrapper {direction:rtl; text-align:right}
+.links div, .links div.float-left {float: right !important}
+.content-header .row {direction:rtl}
+.content-header .row .col-sm-6:first-child{text-align:right}
+.content-header .row .col-sm-6 .float-sm-right {float: left!important;}
+.content-header h1 {text-align: right}
+.content-header h1.float-left{float:right!important}
+.small-box > .inner{text-align:right}
+.small-box > .small-box-footer{direction:rtl}
+.small-box > .small-box-footer i.fas{transform: rotate(180deg)}
+.profileimg{text-align:right!important}
+.box-profile ul li.list-group-item b{float:right}
+.box-profile ul li.list-group-item a.float-right{float:left!important}
+.table.table-bordered.table-striped{direction:rtl}
+.card-body > .table > thead > tr > td, .card-body > .table > thead > tr > th{text-align:right}
+.table-bordered td, .table-bordered th{text-align:right}
+.card-header .row .col-6{margin-left:auto; text-align:right}
+.card-header .row .col-6:last-child{text-align:left!important}
+.card-header .row .col-6:first-child{text-align:right!important}
+.card-header .row{flex-direction:row-reverse}
+.selectconties li{direction:rtl}
+.selectconties li span{float:right}
+.selectconties li i {transform:rotate(180deg)}
+.card-body h4{text-align:right}
+p#ErrorMessage, p#SuccessMessage{text-align:right}
+.modal-content{direction:rtl}
+.modal-header .close{margin: -1rem auto -1rem -1rem}
+.modal-content label{float:right}
+.addetarabic{direction:rtl}
+.addetarabic .col-6{text-align:right}
+.addetarabic .col-5.offset-1 h5{text-align:center}
+.login-card-body input{text-align:right}
+.login-card-body .col-8{margin-left: auto; text-align:right}
+
+.content-wrapper, .main-footer, .main-header {margin-right: 250px; margin-left: 0!important; transition: margin-right .3s ease-in-out;}
+.sidebar-mini.sidebar-collapse .content-wrapper, .sidebar-mini.sidebar-collapse .main-footer, .sidebar-mini.sidebar-collapse .main-header {
+margin-left:0!important; margin-right: 4.6rem!important}
+.main-footer2 {margin-right:0}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 767px) {
+    .sidebar-collapse .main-sidebar, .sidebar-collapse .main-sidebar::before {margin-right: -250px; margin-left:0}
+    .sidebar-mini.sidebar-collapse .content-wrapper, .sidebar-mini.sidebar-collapse .main-footer, .sidebar-mini.sidebar-collapse .main-header {
+        margin-left: 0 !important; margin-right: 0 !important; }
+    .content-wrapper, .main-footer, .main-header {margin-right: 0;}
+    
+}

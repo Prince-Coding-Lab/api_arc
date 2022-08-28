@@ -1,0 +1,12 @@
+@using ShnoFeeh.BusinessService.Common.Manager
+@using ShnoFeeh.BusinessService.Common.Constant
+@using ShnoFeeh.Admin.Shared.Components
+@using Microsoft.Extensions.Configuration
+@using System.Globalization
+@using Microsoft.Extensions.Localization
+@using ShnoFeeh.Admin
+@namespace ShnoFeehAdmin.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject ISessionManager SessionManager
+@inject IConfiguration _configuration
+@inject IStringLocalizer<SharedResource> SharedLocalizer

@@ -1,0 +1,206 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #000
+}
+
+.footer {
+    position: relative;
+    width: 100%;
+    white-space: nowrap;
+    background: #404040;
+    color: #8D8D8D;
+    line-height: 36px;
+    padding: 50px 0;
+}
+
+footer ul {
+    margin-bottom: 0
+}
+
+footer li a {
+    color: #8D8D8D;
+    transition: all 0.5s
+}
+
+    footer li a:hover, footer li a:focus, footer li a:active {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+.text-dark {
+    color: #000 !important
+}
+
+li.nav-item {
+    margin-left: 20px;
+}
+
+    li.nav-item a {
+        padding-top: 0;
+        transition: all 0.5s
+    }
+
+        li.nav-item a:hover, li.nav-item a:focus, li.nav-item a:active {
+            color: #1DA81D !important
+        }
+
+h1 {
+    color: #1DA81D;
+    font-size: 50px;
+    font-weight: 500
+}
+
+h3 {
+    color: #1DA81D;
+    font-size: 30px;
+    font-weight: 500
+}
+
+.bdrb {
+    border-bottom: 1px solid #000;
+    margin: 30px 0;
+    width: 70px
+}
+
+.bannersection p {
+    font-size: 18px;
+    max-width: 80%;
+}
+
+.bannersection ul li {
+    width: 42%;
+    padding-right: 20px
+}
+
+    .bannersection ul li a img {
+        transition: all 0.5s
+    }
+
+    .bannersection ul li a:hover img, .bannersection ul li a:focus img, .bannersection ul li a:active img {
+        transform: scale(1.05)
+    }
+
+.social ul li {
+    margin-left: 10px;
+    font-size: 20px
+}
+
+header .dropdown-toggle::after {
+    display: none
+}
+
+header .dropdown-toggle .dropdown-item {
+    padding:
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: rgba(0,0,0,1);
+}
+
+.bannerar {
+    display: none
+}
+
+.navbar-light .navbar-toggler:focus, .navbar-light .navbar-toggler:active, .navbar-light .navbar-toggler:focus {
+    outline: none
+}
+
+@media screen and (max-width: 767px) {
+    .navbar-light .navbar-toggler {
+        position: relative;
+        top: -10px;
+        border: none
+    }
+
+    .brand-image {
+        max-width: 80%
+    }
+
+    ul.navbar-nav {
+        text-align: right;
+        padding-right: 10px;
+        margin: -20px 0 30px;
+    }
+
+    h1 {
+        font-size: 40px;
+        text-align: center;
+        margin-bottom: 40px
+    }
+
+    .bdrb {
+        display: none
+    }
+
+    .bannersection p {
+        text-align: center;
+        margin: 0 auto
+    }
+
+    .bannersection ul li {
+        width: 48%;
+        padding: 0 15px;
+    }
+}

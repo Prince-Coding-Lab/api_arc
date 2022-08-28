@@ -1,0 +1,481 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.Ads.create_adModel
+@{
+    ViewData["Title"] = "Create New Ad";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+@{
+    string roleName = Model._sessionManager.GetString(SessionItems.RoleName);
+    string name = roleName == "Admin" ? "Ad" : "Campaign";
+
+}
+<style>
+    .red {
+        color:red;
+    }
+</style>
+<script language="javascript" type="text/javascript">
+    function GetCity(_countryId) {
+
+        var procemessage = "<option value='0'> Please wait...</option>";
+        $("#ddlCity").html(procemessage).show();
+        var url = "/Admin/Ads/createAd?handler=City";
+
+        $.ajax({
+            url: url,
+            data: { countryId: _countryId },
+            cache: false,
+            type: "GET",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "json",
+            success: function (data) {
+                var markup = "<option value='' disabled selected>City</option>";
+                for (var x = 0; x < data.length; x++) {
+                    markup += "<option value=" + data[x].id + ">" + data[x].cityName + "</option>";
+                }
+                $("#ddlCity").html(markup).show();
+                $('#addAdsDto_CityId').val(data[0].id);
+
+                var markups = "<option value='' disabled selected>Category</option>";
+                $("#ddlCategory").html("");
+                $("#ddlCategory").html(markups).show();
+                $('#addAdsDto_CategoryId').val(0);
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+
+    }
+    function SetCity(city) {
+        $('#addAdsDto_CityId').val(city);
+
+        var procemessage = "<option value='0'> Please wait...</option>";
+        $("#ddlCategory").html(procemessage).show();
+        var url = "/Admin/Ads/createAd?handler=Category";
+
+        $.ajax({
+            url: url,
+            data: { cityId: city },
+            cache: false,
+            type: "GET",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "json",
+            success: function (data) {
+                var markup = "<option value='' disabled selected>Category</option>";
+                for (var x = 0; x < data.length; x++) {
+                    markup += "<option value=" + data[x].id + ">" + data[x].catName + "</option>";
+                }
+                $("#ddlCategory").html(markup).show();
+                $('#addAdsDto_CategoryId').val(data[0].id);
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+    }
+    function SetCategory(category) {
+        $('#addAdsDto_CategoryId').val(category);
+    }
+</script>
+<script>
+    $(function () {
+        $('#AdCoverImage').change(function (e) {
+            var names = $.map(e.target.files, function (val) { return val.name; });
+            if (names[0].length > 30) {
+                $('.AdCoverImage').html(names[0].substring(0,25) + "...");
+            }
+            else {
+                $('.AdCoverImage').html(names[0]);
+            }
+        });
+        $('#AdImage1').change(function (e) {
+            var names = $.map(e.target.files, function (val) { return val.name; });
+            if (names.length > 5) {
+                alert("Only 5 images can be selected.");
+                $('.AdImage1').html("Select Image");
+            }
+            else if (names.length == 1) {
+                if (names[0].length > 30) {
+                    $('.AdImage1').html(names[0].substring(0, 25) + "...");
+                }
+                else {
+                    $('.AdImage1').html(names[0]);
+                }
+            }
+            else if (names.length <= 5 && names.length > 0) {
+                $('.AdImage1').html(names.length + " images selected.");
+            }
+            else {
+                if (names[0].length > 30) {
+                    $('.AdImage1').html(names[0].substring(0, 25) + "...");
+                }
+                else {
+                    $('.AdImage1').html(names[0]);
+                }
+            }
+        });
+
+
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        //Date range picker
+        $('#reservationdate')
+            .datetimepicker({
+                format: 'DD-MM-YYYY',
+                minDate: moment().millisecond(0).second(0).minute(0).hour(0),
+                useCurrent: false
+
+            });
+        $("#reservationdate").on("change.datetimepicker", function (e) {
+            if ($('#txtEndDate').val() == "") {
+
+            }
+            else if (compareDates($('#txtStartDate').val(), $('#txtEndDate').val())) {
+                var sDate = $('#txtStartDate').val();
+                var eDate = $('#txtEndDate').val();
+                $.ajax({
+                    type: "GET",
+                    url: '/Admin/Ads/createAd?handler=Price',
+                    data: { "startDate": sDate, "endDate": eDate },
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (data) {
+                    $('#Days').val(data.noOfDays);
+                    $('#totalPrice').val(data.amount);
+                    $('#spnTotalPrice').text("KWD " + data.amount);
+                    $('#spnDays').text(data.noOfDays);
+                    $('#h3TotalPrice').text("KWD " + data.amount);
+                    $('#hdStart').val($('#txtStartDate').val());
+                    $('#hdEnd').val($('#txtEndDate').val());
+                })
+            }
+            else {
+                alert("Start date should not be greater than end date");
+                $('#txtStartDate').val("");
+            }
+        });
+    });
+
+    $(function () {
+        //Date range picker
+        $('#reservationdate1').datetimepicker({
+            format: 'DD-MM-YYYY',
+            minDate: moment().millisecond(0).second(0).minute(0).hour(0),
+            useCurrent: false
+        });
+        $("#reservationdate1").on("change.datetimepicker", function (e) {
+            if ($('#txtStartDate').val() == "") {
+
+            }
+            else if (compareDates($('#txtStartDate').val(), $('#txtEndDate').val())) {
+                var sDate = $('#txtStartDate').val();
+                var eDate = $('#txtEndDate').val();
+                $.ajax({
+                    type: "GET",
+                    url: '/Admin/Ads/createAd?handler=Price',
+                    data: { "startDate": sDate, "endDate": eDate },
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                }).done(function (data) {
+                    $('#Days').val(data.noOfDays);
+                    $('#totalPrice').val(data.amount);
+                    $('#spnTotalPrice').text("KWD " + data.amount);
+                    $('#spnDays').text(data.noOfDays);
+                    $('#h3TotalPrice').text("KWD " + data.amount);
+                    $('#hdStart').val($('#txtStartDate').val());
+                    $('#hdEnd').val($('#txtEndDate').val());
+                })
+            }
+            else {
+                alert("End date should not be less than start date");
+                $('#txtEndDate').val("");
+            }
+        });
+    })
+    function compareDates(d1, d2) {
+        var parts = d1.split('-');
+        var d1 = Number(parts[2] + parts[1] + parts[0]);
+        parts = d2.split('-');
+        var d2 = Number(parts[2] + parts[1] + parts[0]);
+        return d1 <= d2;
+    }
+</script>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="float-left">Create @name</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">Home</a></li>
+                        <li class="breadcrumb-item active">@name Listing</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            @if (Model.SuccessMessage != "")
+            {
+                <p id="SuccessMessage" style="color:green;margin-top:1rem;margin-left:10px">@Model.SuccessMessage</p>
+            }
+            @if (Model.ErrorMessage != "")
+            {
+                <p id="ErrorMessage" style="color:red;margin-top:1rem;margin-left:10px">@Model.ErrorMessage</p>
+            }
+            <form method="post" enctype="multipart/form-data">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- Profile Image -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>@name Name</label>
+                                            <input type="text" class="form-control" placeholder="@name Name" asp-for="@Model.addCampaignDto.Name" required maxlength="100">
+                                        </div>
+                                    </div>
+
+                                    @*<div class="col-9">
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>@name Goal</label>
+                                            <input type="text" class="form-control" placeholder="@name Goal" asp-for="@Model.addCampaignDto.Goal" required>
+                                        </div>
+                                    </div>*@
+                                </div>
+                                @*<div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="exampleInputFile"><span class="red">*</span>@name Description</label>
+                                            <textarea placeholder="@name Description" class="w-100" asp-for="@Model.addCampaignDto.Description" required maxlength="500"></textarea>
+                                        </div>
+
+                                    </div>
+                                </div>*@
+                            </div>
+
+                            <div class="card-body table-responsive">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>Ad Title</label>
+                                            <input type="text" class="form-control" placeholder="Ad Title" asp-for="@Model.addAdsDto.Title" required maxlength="100">
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>Select Country</label>
+                                            <select required class="form-control"
+                                                    asp-items="@(new SelectList(Model.CountryDto,"Id","Country"))"
+                                                    onchange="javascript:GetCity(this.value);">
+                                                <option value="" disabled selected>Country</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 offset-md-1">
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>City</label>
+                                            <select required id="ddlCity" name="ddlCity" asp-for="@Model.addAdsDto.CityId" asp-items="@(Model.CityDto != null ? (new SelectList(Model.CityDto,"Id","CityName")) : (new SelectList("","Id","CityName")))" onchange="javascript:SetCity(this.value)" class="form-control">
+                                                <option value="" disabled selected>City</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    @Html.HiddenFor(model => Model.addAdsDto.CityId)
+                                    @Html.HiddenFor(model => Model.addAdsDto.CategoryId)
+                                </div>
+                                <div class="row">
+                                    <div class="col-4 ">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>Category</label>
+                                            <select required id="ddlCategory" name="ddlCategory" asp-for="@Model.addAdsDto.CategoryId" asp-items="@(Model.CategoryDto != null ? (new SelectList(Model.CategoryDto,"Id","CatName")) : (new SelectList("","Id","CatName")))" onchange="javascript:SetCategory(this.value)" class="form-control">
+                                                <option value="" disabled selected>Category</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 offset-md-1">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label><span class="red"></span>Keywords</label>
+                                            <input type="text" class="form-control" placeholder="Keywords" asp-for="@Model.addAdsDto.Keyword" maxlength="30">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>From Date:</label>
+
+                                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                                <input type="text" id="txtStartDate" class="form-control datetimepicker-input sDate" data-target="#reservationdate" 
+                                                       required autocomplete="off" />
+                                                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 offset-md-1">
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>Till Date:</label>
+                                            <div class="input-group date" id="reservationdate1" data-target-input="nearest">
+                                                <input type="text" id="txtEndDate" class="form-control datetimepicker-input eDate" data-target="#reservationdate1" 
+                                                       autocomplete="off" required />
+                                                <div class="input-group-append" data-target="#reservationdate1" data-toggle="datetimepicker">
+                                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3 text-center">
+                                        <p class="mb-0 mt-2">Total Price:</p>
+                                        <h3 class="text-danger mt-0" id="h3TotalPrice" asp-for="@Model.totalPrice"></h3>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    @*<div class="col-4">
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="text" class="form-control" placeholder="Enter Amount">
+                </div>
+            </div>*@
+                                    <div class="col-4 ">
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>Phone Number</label>
+                                            <input type="text" class="form-control" placeholder="Enter Phonenumber" asp-for="@Model.addAdsDto.Phone" maxlength="10" pattern="^[0-9]*$" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 offset-md-1">
+                                        <div class="form-group">
+                                            <label><span class="red">*</span>Active Link</label>
+                                            <select class="form-control" asp-for="@Model.addAdsDto.ActiveLink" required>
+                                                <option value="" disabled selected>Active Link</option>
+                                                <option value="URL">URL</option>
+                                                <option value="Phone">Phone</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label>Website/Instagram Link</label>
+                                            <input type="text" class="form-control" placeholder="Enter Website" asp-for="@Model.addAdsDto.URL" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-4 offset-md-1">
+                                        <div class="form-group">
+                                            <label>Offer Price (optional)</label>
+                                            <input type="text" class="form-control" placeholder="Offer Price"  autocomplete="off" asp-for="@Model.addAdsDto.ProductPrice">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label for="exampleInputFile"><span class="red">*</span>Ad Cover/Main Image</label>
+                                            <div class="input-group">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="AdCoverImage" asp-for="@Model.AdImages" required accept=".jpg,.png,.gif">
+                                                    <label class="custom-file-label AdCoverImage" for="AdCoverImage">Select Image</label>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 offset-md-1">
+                                        <div class="form-group">
+                                            <label for="exampleInputFile">Other Images</label>
+                                            <div class="input-group">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="AdImage1" asp-for="@Model.AdImages" multiple accept=".jpg,.png,.gif">
+                                                    <label class="custom-file-label AdImage1" for="AdImage1">Select Image(s)</label>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="form-group">
+                                            <label for="exampleInputFile"><span class="red">*</span>Ad Description</label>
+                                            <textarea placeholder="Ad Details" class="w-100" asp-for="@Model.addAdsDto.Desc" required maxlength="3999"></textarea>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="form-group">
+                                            <label for="exampleInputFile"><span class="red">*</span>Payment Type : </label>
+                                            @{int i = 1;}
+                                            @foreach (var paymentType in Model.PaymentTypes)
+                                            {
+                                                <input style="margin-right:5px" type="radio" asp-for="PaymentType" value="@i" id="@paymentType" required /><b style="margin-right:15px">@paymentType</b>
+                                                i++;
+                                            }
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- /.card-body -->
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5>Number of days selected: <span class="text-danger" id="spnDays" asp-for="@Model.Days"></span></h5>
+                                        <h4>Total Price to be paid: <strong class="text-danger" id="spnTotalPrice" asp-for="@Model.totalPrice"><span></span></strong></h4>
+                                    </div>
+                                </div>
+                                @Html.HiddenFor(model => Model.totalPrice)
+                                @Html.HiddenFor(model => Model.Days)
+                                <input type="submit" asp-page-handler="AddCampaign" class="btn btn-primary mt-4" value="Submit ad for payment & review" />
+                                <input type="hidden" id="hdStart" name="hdStart" value="" />
+                                <input type="hidden" id="hdEnd" name="hdEnd" value="" />
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                </div>
+
+            </form>
+
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>

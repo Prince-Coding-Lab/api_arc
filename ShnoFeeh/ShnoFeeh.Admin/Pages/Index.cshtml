@@ -1,0 +1,22 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+    <div class="row mb-5">
+        <div class="col-12 col-md-5 pl-md-5 mt-5 bannersection order-2 order-md-1">
+            <h1 class="mt-4">@SharedLocalizer["your_way"]</h1>
+            <div class="bdrb"></div>
+            <p>@SharedLocalizer["download_app_find"]</p>
+            <ul class="list-inline mt-5 mb-5 mb-md-0">
+                <li class="list-inline-item"><a href="#"><img src="~/images/app-store.png" alt="Shnofeeh App Store" class="img-fluid"></a></li>
+                <li class="list-inline-item"><a href="#"><img src="~/images/google-play.png" alt="Shnofeeh Google Play" class="img-fluid"></a></li>
+            </ul>
+        </div>
+        <div class="col-12 col-md-7 order-1 order-md-2">
+            <img src="~/images/banner.png" alt="Shnofeeh Banner" class="img-fluid banneren">
+            <img src="~/images/banner-ar.png" alt="Shnofeeh Banner" class="img-fluid bannerar">
+        </div>
+    </div>

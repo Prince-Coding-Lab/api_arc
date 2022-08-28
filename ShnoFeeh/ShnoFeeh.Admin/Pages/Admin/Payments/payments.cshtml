@@ -1,0 +1,439 @@
+﻿@page
+@model ShnoFeeh.Admin.Pages.paymentsModel
+@{
+    ViewData["Title"] = "Payments";
+    Layout = "~/Pages/Admin/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        var oTable = $('#tblPayments').DataTable({
+        });
+
+        $('#ddlMonths').change(function () {
+            oTable.draw();
+            getAmount($('#ddlMonths').val());
+        });
+    });
+
+    function getAmount(months) {
+        var url = "/Admin/Payments/payments?handler=Amount";
+        $.ajax({
+            url: url,
+            data: { month: months },
+            cache: false,
+            type: "GET",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "json",
+            success: function (data) {
+                $("#strAmount").html("KWD " + Number(data).toFixed(3));
+            },
+            error: function (reponse) {
+                alert("error : " + reponse);
+            }
+        });
+    }
+
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var selectedRange = $('#ddlMonths').val();
+            var paymentDate = data[3].split(' ')[0];
+            //alert(data)// use data for the color column
+            var day = paymentDate.split('-')[0];
+            var month = paymentDate.split('-')[1];
+            var year = paymentDate.split('-')[2];
+            if (selectedRange == 0) {
+                return true;
+            }
+            else {
+                var oldDate = new Date(year, month - 1, day)
+                var newDate = new Date();
+                var minDate = new Date(newDate.getFullYear(), newDate.getMonth() - selectedRange, newDate.getDate());
+                //alert(oldDate + ' ' + minDate);
+                if (oldDate >= minDate) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    );
+    function invoiceOrder(id) {
+        $(".modal-body #dvInvoiceProgress").show();
+        $(".modal-body #dvInvoiceDetails").hide();
+        $(".modal-body #dvCustomerDetails").hide();
+        $(".modal-body #dvTransactionDetails").hide();
+        $(".modal-body #dvInvoiceNoRecord").hide();
+        $.ajax({
+            type: "POST",
+            url: '/Admin/Payments/payments?handler=GetInvoice',
+            data: { "invoiceId": id },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            dataType: "json",
+            success:
+                (function (data) {
+                    if (data != null || data != "") {
+                        $(".modal-body #dvInvoiceProgress").hide();
+                        $(".modal-body #dvInvoiceDetails").show();
+                        $(".modal-body #dvCustomerDetails").show();
+                        $(".modal-body #dvTransactionDetails").show();
+                        $(".modal-body #lblInvoiceId").text(data.invoiceId);
+                        $(".modal-body #lblInvoiceReference").text(data.invoiceReference);
+                        $(".modal-body #lblInvoiceStatus").text(data.invoiceStatus);
+                        $(".modal-body #lblInvoiceAmount").text(data.invoiceValue);
+                        $(".modal-body #lblInvoiceCurrency").text("KWD");
+                        $(".modal-body #lblInvoiceDate").text(parseISOString(data.createdDate));
+                        $(".modal-body #lblCustomerName").text(data.customerName);
+                        $(".modal-body #lblCustomerEmail").text(data.customerEmail);
+                        $(".modal-body #lblCustomerPhone").text(data.customerMobile);
+                        $(".modal-body #lblTransactionID").text(data.invoiceTransactions[0].transactionId);
+                        $(".modal-body #lblPaymentID").text(data.invoiceTransactions[0].paymentId);
+                        $(".modal-body #lblPaymentType").text(data.invoiceTransactions[0].paymentGateway);
+                        $(".modal-body #lblTransactionValue").text("KWD " + data.invoiceTransactions[0].paidCurrencyValue);
+                        $(".modal-body #lblTransactionStatus").text(data.invoiceTransactions[0].transactionStatus + " " + (data.invoiceTransactions[0].error ?? ""));
+                    }
+                    else {
+                        $(".modal-body #dvInvoiceProgress").hide();
+                        $(".modal-body #dvInvoiceDetails").hide();
+                        $(".modal-body #dvCustomerDetails").hide();
+                        $(".modal-body #dvTransactionDetails").hide();
+                        $(".modal-body #dvInvoiceNoRecord").show();
+                        $(".modal-body #lblInvoicePayment1").text(data.reference);
+                    }
+                })
+        })
+    }
+
+    function parseISOString(s) {
+        var m = new Date(s);
+        var d = new Date(m.getTime()), // Convert the passed timestamp to milliseconds
+            yyyy = d.getFullYear(),
+            mm = ('0' + (d.getMonth() + 1)).slice(-2),  // Months are zero based. Add leading 0.
+            dd = ('0' + d.getDate()).slice(-2),         // Add leading 0.
+
+            time = dd + '-' + mm + '-' + yyyy;
+        //time = yyyy + '-' + mm + '-' + dd + ', ' + h + ':' + min + ' ' + ampm;
+        return time;
+    }
+</script>
+<script type="text/javascript">
+    $(document).on("click", ".invoiceClass", function () {
+        var Id = $(this).data('id');
+        invoiceOrder(Id);
+    });
+</script>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="float-left">Payments</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a asp-page="/Admin/Dashboard">@SharedLocalizer["home"]</a></li>
+                        <li class="breadcrumb-item active">@SharedLocalizer["payments"]</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 mt-2">
+                    <!-- Profile Image -->
+
+                    <div class="card">
+                        <!-- /.card-header -->
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-md-6 pl-0">
+                                    @if (Model._sessionManager.GetString(SessionItems.RoleName) == "Admin")
+                                    {
+                                        <label>Total Payments Received:</label>
+                                    }
+                                    else
+                                    {
+                                        <label>Total Paid Amount:</label>
+                                    }
+                                    <h4><strong id="strAmount">KWD @Model.Amount</strong></h4>
+                                </div>
+
+                                <div class="col-md-2 mt-4 mt-md-0 pl-0 text-right offset-md-4">
+                                    <label>Filter By Months</label>
+                                    <form method="post">
+                                        <select class="form-control" id="ddlMonths">
+                                            <option value="0">All</option>
+                                            <option value="1">1 Month</option>
+                                            <option value="3">3 Months</option>
+                                            <option value="6">6 Months</option>
+                                            <option value="12">12 Months</option>
+
+                                        </select>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table id="tblPayments" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+
+                                        <th>Company Name</th>
+                                        <th>Ad Name</th>
+                                        @*<th>Status</th>*@
+                                        <th>Payment Amount</th>
+                                        <th>Payment Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.OrderDtos != null)
+                                    {
+                                        foreach (var order in Model.OrderDtos)
+                                        {
+                                            @if (order.OrderAds != null && order.OrderAds.Count > 0)
+                                            {
+                                                <tr>
+                                                    <td>@order.CreatedBy</td>
+                                                    <td>
+                                                        @{int randIdn = new Random().Next(132);
+                                                            var formIdn = "form_" + randIdn.ToString();
+                                                        }
+                                                        <form id="@formIdn" asp-page-handler="AdDetails" method="post">
+                                                            <input type="hidden" name="adId" value="@order.OrderAds[0].AdId" />
+                                                            <a href="javascript:$('#@formIdn').submit();">@order.OrderAds[0].CampaginName</a>
+                                                        </form>
+                                                        @*<a asp-page="/Admin/ads/adDetails" asp-route-adId="@campaign.Ads[0].Id">@campaign.Name</a>*@
+                                                    </td>
+                                                    @*<td><a asp-page="/Admin/ads/adDetails" asp-route-adId="@order.OrderAds[0].AdId" asp-route-campaign="@order.OrderAds[0].CampaginName">@order.OrderAds[0].CampaginName</a></td>*@
+                                                    @*@if (order.PaymentId == null)
+                                                        {
+                                                            <td><a href="#"><span class="status badge bg-info">Pending Payment</span></a></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><a href="#"><span class="status badge bg-success">Completed</span></a></td>
+                                                        }*@
+                                                    <td>KWD @order.TotalPrice</td>
+                                                    <td>@((Convert.ToDateTime(order.CreatedDate)).ToString("dd-MM-yyyy HH:mm:ss tt"))</td>
+                                                    @if (order.PaymentId == null)
+                                                    {
+                                                        <td class="links"><span>View Invoice</span></td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="links"><a href="#" class="mr-2 text-danger invoiceClass" data-target="#invoiceModal" data-toggle="modal" data-id="@order.PaymentId">View Invoice</a></td>
+                                                    }
+
+                                                </tr>
+                                            }
+                                        }
+                                    }
+
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                        <!--Modal Popup for Invoice-->
+                        <div style="margin: 20px;">
+                            <div id="invoiceModal" class="modal fade" tabindex="-1">
+                                <div class="modal-dialog modal-lg">
+                                    <div>
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Invoice</h5>
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div id="dvInvoiceProgress">
+                                                    <p class="">Fetching Details...</p>
+                                                </div>
+                                                <div style="width:90%">
+                                                    <div id="dvInvoiceDetails" style="display:none;float:left">
+                                                        <h5 class="">Payment Details</h5>
+                                                        <table>
+
+                                                            <tr>
+                                                                <td class=" align-top" style="width:150px;">
+                                                                    <label>Invoice Id : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblInvoiceId" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Invoice Reference : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblInvoiceReference" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Invoice Status : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblInvoiceStatus" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Amount : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblInvoiceAmount" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Currency : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblInvoiceCurrency" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+
+
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Invoice Date : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblInvoiceDate" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+
+                                                        </table>
+                                                    </div>
+                                                    <div id="dvCustomerDetails" style="display:none;float:right">
+
+                                                        <h5 class="">Customer Details</h5>
+                                                        <table>
+                                                            <tr>
+                                                                <td class=" align-top" style="width:150px;">
+                                                                    <label>Name : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblCustomerName" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Email : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblCustomerEmail" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Phone : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblCustomerPhone" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <div style="clear:both">
+                                                    <div id="dvTransactionDetails" style="display:none;float:left">
+                                                        <p></p>
+                                                        <h5>Transaction Details</h5>
+                                                        <table>
+                                                            <tr>
+                                                                <td class=" align-top" style="width:150px;">
+                                                                    <label>Transaction ID : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblTransactionID" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Payment ID : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblPaymentID" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Payment Type : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblPaymentType" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Transaction Value : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblTransactionValue" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class=" align-top">
+                                                                    <label>Transaction Status : </label>
+                                                                </td>
+                                                                <td class=" align-top">
+                                                                    <label id="lblTransactionStatus" style="font-weight:normal;"></label>
+                                                                </td>
+                                                            </tr>
+
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <div id="dvInvoiceNoRecord" style="display:none">
+                                                    <table>
+                                                        <tr>
+                                                            <td class=" align-top">
+                                                                <label>PaymentId : </label>
+                                                            </td>
+                                                            <td class=" align-top">
+                                                                <label style="font-weight:normal;" id="lblInvoicePayment1"></label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class=" align-top">
+                                                                <label>Status : </label>
+                                                            </td>
+                                                            <td class=" align-top">
+                                                                <label id="lblStatus1" style="font-weight:normal;">Invoice not found</label>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer justify-content-center">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>

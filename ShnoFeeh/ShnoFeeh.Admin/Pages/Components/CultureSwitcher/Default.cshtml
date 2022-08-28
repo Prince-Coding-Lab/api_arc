@@ -1,0 +1,49 @@
+﻿@model ShnoFeeh.Admin.CultureSwitcherModel
+
+
+@{
+    var lang = "";
+    var flag = "";
+
+    if (string.IsNullOrEmpty(Context.Request.Query["culture"]))
+    {
+        lang = "en-us";
+        flag = "us.png";
+    }
+    else
+    {
+        lang = Context.Request.Query["culture"];
+
+        if (lang.ToLower().Contains("ar"))
+
+            flag = "kw.png";
+        else
+
+            flag = "us.png";
+    }
+
+
+}
+<form id="culture-switcher">
+
+
+    <a class="nav-link dropdown-toggle " href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <img src="~/images/@flag" class="pr-2">@lang<i class="fas fa-chevron-down ml-2"></i>
+    </a>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+        <button type="submit" class="dropdown-item btnLang mr-2 pl-2 pr-2" data-lang="@Model.SupportedCultures[0].Name"><img src="~/images/us.png" /><span> @Model.SupportedCultures[0].DisplayName</span></button>
+        <button type="submit" class="dropdown-item btnLang mr-2 pl-2 pr-2" data-lang="@Model.SupportedCultures[1].Name"><img src="~/images/kw.png"><span class="mr-2"> @Model.SupportedCultures[1].DisplayName</span></button>
+        <input type="hidden" name="culture" id="hiddenLang" />
+    </div>
+
+</form>
+
+<script>
+
+    $(".btnLang").on("click", function (id) {
+     
+        $("#hiddenLang").val($(this).attr("data-lang"));
+    });
+
+</script>
+
